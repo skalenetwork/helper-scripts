@@ -7,6 +7,7 @@ export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 
 export SM_IMAGE_NAME="skale-manager"
 export ALLOCATOR_IMAGE_NAME="skale-allocator"
+export SGX_WALLET_CONTAINER_NAME="sgx-simulator"
 
 export DOCKER_NETWORK=${DOCKER_NETWORK:-testnet}
 export GANACHE_VERSION=${GANACHE_VERSION:-beta}
@@ -96,4 +97,20 @@ run_ganache () {
     docker run -d --network $DOCKER_NETWORK -p 8545:8545 -p 8546:8546 \
         --name ganache trufflesuite/ganache-cli:$GANACHE_VERSION \
         --account="0x${1},100000000000000000000000000" -l 80000000 -b 1
+}
+
+
+# Run docker container with sgx simulator
+#
+# Previous sgx-simulator container will be removed
+#
+#:param SGX_WALLET_TAG: Tag of the SGX simulator Docker container
+#:type SGX_WALLET_TAG: str
+run_sgx_simulator () {
+    : "${1?Pass SGX_WALLET_TAG to ${FUNCNAME[0]}}"
+    SGX_WALLET_IMAGE_NAME=skalenetwork/sgxwallet_sim:$1
+
+    docker rm -f $SGX_WALLET_CONTAINER_NAME || true
+    docker pull $SGX_WALLET_IMAGE_NAME
+    docker run -d -p 1026-1028:1026-1028 --name $SGX_WALLET_CONTAINER_NAME $SGX_WALLET_IMAGE_NAME -s -y -a
 }
