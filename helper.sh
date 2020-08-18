@@ -114,3 +114,8 @@ run_sgx_simulator () {
     docker pull $SGX_WALLET_IMAGE_NAME
     docker run -d -p 1026-1028:1026-1028 --name $SGX_WALLET_CONTAINER_NAME $SGX_WALLET_IMAGE_NAME -s -y -a
 }
+
+
+create_test_docker_network () {
+    docker network create $DOCKER_NETWORK || true
+}
