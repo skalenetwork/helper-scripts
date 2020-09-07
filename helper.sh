@@ -30,14 +30,18 @@ deploy_manager () {
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
     echo Going to run $SM_IMAGE_NAME:$1 docker container...
 
+    mkdir -p $DIR/contracts_data/openzeppelin
+
     docker rm -f $SM_IMAGE_NAME || true
     docker pull skalenetwork/$SM_IMAGE_NAME:$1
     docker run \
         --name $SM_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
+        --mount type=volume,dst=/usr/src/manager/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
+        -e GASPRICE=$GASPRICE \
         skalenetwork/$SM_IMAGE_NAME:$1 \
         npx truffle migrate --network unique
 }

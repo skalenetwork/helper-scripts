@@ -6,8 +6,6 @@
 
 set -e
 
-export $(egrep -v '^#' .env | xargs)
-
 : "${ETH_PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
 : "${MANAGER_TAG?Need to set MANAGER_TAG}"
 

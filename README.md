@@ -1,0 +1,1 @@
+# SKALE Helper bash scripts
