@@ -12,10 +12,11 @@ set -e
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 export ALLOCATOR_PRODUCTION=${ALLOCATOR_PRODUCTION:-true}
+export NETWORK=${NETWORK:-unique}
 
 source $DIR/helper.sh
 
 create_test_docker_network
 run_ganache $ETH_PRIVATE_KEY
-deploy_manager $MANAGER_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY
+deploy_manager $MANAGER_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $NETWORK
 deploy_allocator $ALLOCATOR_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $ALLOCATOR_PRODUCTION

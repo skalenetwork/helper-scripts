@@ -24,10 +24,13 @@ export GANACHE_GAS_LIMIT=${GANACHE_GAS_LIMIT:-80000000}
 #:type ENDPOINT: str
 #:param ETH_PRIVATE_KEY: Ethereum private key (WITHOUT 0x prefix)
 #:type ETH_PRIVATE_KEY: str
+#:param NETWORK: Network from the truffle-config.json file
+#:type NETWORK: str
 deploy_manager () {
     : "${1?Pass MANAGER_TAG to ${FUNCNAME[0]}}"
     : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
+    : "${4?Pass NETWORK to ${FUNCNAME[0]}}"
     echo Going to run $SM_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
@@ -43,7 +46,7 @@ deploy_manager () {
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$GASPRICE \
         skalenetwork/$SM_IMAGE_NAME:$1 \
-        npx truffle migrate --network unique
+        npx truffle migrate --network $NETWORK
 }
 
 
