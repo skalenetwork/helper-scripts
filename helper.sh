@@ -14,6 +14,24 @@ export GANACHE_VERSION=${GANACHE_VERSION:-beta}
 export GANACHE_GAS_LIMIT=${GANACHE_GAS_LIMIT:-80000000}
 
 
+run_manager () {
+    : "${1?Pass MANAGER_TAG to ${FUNCNAME[0]}}"
+    echo Going to run $SM_IMAGE_NAME:$1 docker container...
+
+    mkdir -p $DIR/contracts_data/openzeppelin
+
+    docker rm -f $SM_IMAGE_NAME || true
+    docker pull skalenetwork/$SM_IMAGE_NAME:$1
+    docker run \
+        -ti \
+        --name $SM_IMAGE_NAME \
+        -v $DIR/contracts_data:/usr/src/manager/data \
+        --mount type=volume,dst=/usr/src/manager/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
+        --network $DOCKER_NETWORK \
+        skalenetwork/$SM_IMAGE_NAME:$1 \
+        bash
+}
+
 # Deploy SKALE Manager to the specified RPC endpoint
 #
 # Results will saved in {CURRENT_DIR}/contracts_data/{NETWORK_NAME}.json
