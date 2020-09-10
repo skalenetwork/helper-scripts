@@ -15,6 +15,4 @@ set -e
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source $DIR/helper.sh
-
-create_test_docker_network
 deploy_manager $MANAGER_TAG $ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $NETWORK
