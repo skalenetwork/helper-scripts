@@ -4,6 +4,13 @@
 
 ### Available scripts
 
+#### Run specified version of SKALE Manager and login into it
+
+```bash
+export MANAGER_TAG=
+./helper-scripts/run_skale_manager.sh
+```
+
 #### Deploy test skale-manager on ganache
 
 ```bash
@@ -28,10 +35,11 @@ export ETH_PRIVATE_KEY=
 export MANAGER_TAG=
 export ENDPOINT=
 export NETWORK=
+export GAS_PRICE=
 ./helper-scripts/deploy_manager.sh
 ```
 
-#### Deploy skale-allocator
+#### Deploy skale-manager and skale-allocator
 
 ```bash
 export ETH_PRIVATE_KEY=
@@ -39,10 +47,22 @@ export MANAGER_TAG=
 export ALLOCATOR_TAG=
 export ENDPOINT=
 export NETWORK=
-./helper-scripts/deploy_allocator.sh
+./helper-scripts/deploy_manager_allocator.sh
 ```
 
+#### Deploy skale-allocator and link to skale-manager
 
+You should put `manager.json` (ABI of skale-manager) to `contracts_data` folder in this repo
+
+```bash
+export ETH_PRIVATE_KEY=
+export ALLOCATOR_TAG=
+export ENDPOINT=
+export GAS_PRICE=
+export NETWORK=
+
+./helper-scripts/deploy_allocator.sh
+```
 
 #### Calculate version
 

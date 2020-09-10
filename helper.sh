@@ -48,7 +48,8 @@ deploy_manager () {
     : "${1?Pass MANAGER_TAG to ${FUNCNAME[0]}}"
     : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
-    : "${4?Pass NETWORK to ${FUNCNAME[0]}}"
+    : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
+    : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
     echo Going to run $SM_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
@@ -58,13 +59,16 @@ deploy_manager () {
     docker run \
         --name $SM_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
-        --mount type=volume,dst=/usr/src/manager/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
-        -e GASPRICE=$GASPRICE \
+        -e GASPRICE=$4 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
-        npx truffle migrate --network $NETWORK
+        npx truffle migrate --network $5
+
+    echo Copying $DIR/contracts_data/$NETWORK.json -> $DIR/contracts_data/manager.json
+    cp $DIR/contracts_data/$NETWORK.json $DIR/contracts_data/manager.json
+    docker rm -f $SM_IMAGE_NAME || true
 }
 
 
@@ -85,6 +89,15 @@ deploy_allocator () {
     : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass ALLOCATOR_PRODUCTION to ${FUNCNAME[0]}}"
+    : "${5?Pass GAS_PRICE to ${FUNCNAME[0]}}"
+    : "${6?Pass NETWORK to ${FUNCNAME[0]}}"
+
+    SM_ABI_FILEPATH=$DIR/contracts_data/manager.json
+    if [ ! -f $SM_ABI_FILEPATH ]; then
+        echo "$SM_ABI_FILEPATH file not found!"
+        exit 3
+    fi
+
     echo Going to run $ALLOCATOR_IMAGE_NAME:$1 docker container...
 
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
@@ -99,11 +112,15 @@ deploy_allocator () {
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
         -e PRODUCTION=$4 \
+        -e GASPRICE=$5 \
         skalenetwork/$ALLOCATOR_IMAGE_NAME:$1 \
         bash /bootstrap.sh
 
-    docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/unique.json /usr/src/allocator/scripts/manager.json"
-    docker exec $ALLOCATOR_IMAGE_NAME bash -c "npx truffle migrate --network unique"
+    MIGRATE_CMD="npx truffle migrate --network $6"
+
+    docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/manager.json /usr/src/allocator/scripts/manager.json"
+    docker exec $ALLOCATOR_IMAGE_NAME bash -c "$MIGRATE_CMD"
+
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 }
 
