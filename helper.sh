@@ -59,6 +59,7 @@ deploy_manager () {
     docker run \
         --name $SM_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
+        --mount type=volume,dst=/usr/src/manager/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
@@ -102,12 +103,15 @@ deploy_allocator () {
 
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 
+     mkdir -p $DIR/allocator_contracts_data/openzeppelin
+
     docker pull skalenetwork/$ALLOCATOR_IMAGE_NAME:$1
     docker run \
         -d \
         --name $ALLOCATOR_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager_data \
         -v $DIR/allocator_contracts_data:/usr/src/allocator/data \
+        --mount type=volume,dst=/usr/src/allocator/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/allocator_contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
