@@ -125,6 +125,9 @@ deploy_allocator () {
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/manager.json /usr/src/allocator/scripts/manager.json"
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "$MIGRATE_CMD"
 
+    echo Copying $DIR/allocator_contracts_data/$NETWORK.json to $DIR/allocator_contracts_data/manager.json
+    cp $DIR/allocator_contracts_data/$NETWORK.json $DIR/allocator_contracts_data/allocator.json
+
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 }
 
@@ -164,4 +167,12 @@ run_sgx_simulator () {
 
 create_test_docker_network () {
     docker network create $DOCKER_NETWORK || true
+}
+
+
+create_universal_abi_file () {
+    : "${1?Pass MANAGER_FILEPATH to ${FUNCNAME[0]}}"
+    : "${2?Pass ALLOCATOR_FILEPATH to ${FUNCNAME[0]}}"
+    : "${3?Pass RESULT_FILEPATH to ${FUNCNAME[0]}}"
+    python $DIR/create_universal_abi_file.py $1 $2 $3
 }

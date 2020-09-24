@@ -23,3 +23,9 @@ create_test_docker_network
 run_ganache $ETH_PRIVATE_KEY
 deploy_manager $MANAGER_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $NETWORK
 deploy_allocator $ALLOCATOR_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $ALLOCATOR_PRODUCTION $GAS_PRICE $NETWORK
+
+MANAGER_ABI_FILE=$DIR/contracts_data/manager.json
+ALLOCATOR_ABI_FILE=$DIR/allocator_contracts_data/allocator.json
+RESULT_FILEPATH=$DIR/contracts_data/universal.json
+
+create_universal_abi_file $MANAGER_ABI_FILE $ALLOCATOR_ABI_FILE $RESULT_FILEPATH
