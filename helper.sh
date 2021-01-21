@@ -7,6 +7,7 @@ export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 
 export SM_IMAGE_NAME="skale-manager"
 export ALLOCATOR_IMAGE_NAME="skale-allocator"
+export IMA_IMAGE_NAME="ima"
 export SGX_WALLET_CONTAINER_NAME="sgx-simulator"
 
 export DOCKER_NETWORK=${DOCKER_NETWORK:-testnet}
@@ -131,6 +132,45 @@ deploy_allocator () {
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 }
 
+
+
+# Deploy SKALE Manager to the specified RPC endpoint
+#
+# Results will saved in {CURRENT_DIR}/contracts_data/{NETWORK_NAME}.json
+#
+#:param MANAGER_TAG: Tag of the SKALE Manager Docker container
+#:type MANAGER_TAG: str
+#:param ENDPOINT: Ethereum RPC endpoint
+#:type ENDPOINT: str
+#:param ETH_PRIVATE_KEY: Ethereum private key (WITHOUT 0x prefix)
+#:type ETH_PRIVATE_KEY: str
+deploy_ima_proxy () {
+    : "${1?Pass IMA_TAG to ${FUNCNAME[0]}}"
+    : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
+    : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
+    : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
+    echo Going to run $IMA_IMAGE_NAME:$1 docker container...
+
+    mkdir -p $DIR/contracts_data/openzeppelin
+
+    docker rm -f $IMA_IMAGE_NAME || true
+    docker pull skalenetwork/$IMA_IMAGE_NAME:$1
+    docker run \
+        --name $IMA_IMAGE_NAME \
+        -v $DIR/contracts_data:/usr/src/proxy/data \
+        --mount type=volume,dst=/usr/src/proxy/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
+        --network $DOCKER_NETWORK \
+        -e URL_W3_ETHEREUM=$2 \
+        -e PRIVATE_KEY_FOR_ETHEREUM=$3 \
+        -e GASPRICE=$4 \
+        -e NETWORK="mainnet" \
+        skalenetwork/$IMA_IMAGE_NAME:$1 \
+        npx truffle migrate --network $5
+
+    echo Copying $DIR/contracts_data/proxyMainnet.json -> $DIR/contracts_data/ima.json
+    cp $DIR/contracts_data/proxyMainnet.json $DIR/contracts_data/ima.json
+    docker rm -f $IMA_IMAGE_NAME || true
+}
 
 # Run ganache container with given private key
 #
