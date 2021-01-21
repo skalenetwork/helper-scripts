@@ -157,17 +157,18 @@ deploy_ima_proxy () {
     docker pull skalenetwork/$IMA_IMAGE_NAME:$1
     docker run \
         --name $IMA_IMAGE_NAME \
-        -v $DIR/contracts_data:/usr/src/proxy/data \
+        -v $DIR/contracts_data:/ima/proxy/data \
         --mount type=volume,dst=/usr/src/proxy/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
         -e URL_W3_ETHEREUM=$2 \
         -e PRIVATE_KEY_FOR_ETHEREUM=$3 \
         -e GASPRICE=$4 \
-        -e NETWORK="mainnet" \
+        -e NETWORK_FOR_ETHEREUM="mainnet" \
+        --workdir="/ima/proxy" \
         skalenetwork/$IMA_IMAGE_NAME:$1 \
-        npx truffle migrate --network $5
+        yarn deploy-to-mainnet
 
-    echo Copying $DIR/contracts_data/proxyMainnet.json -> $DIR/contracts_data/ima.json
+    echo "Copying $DIR/contracts_data/proxyMainnet.json -> $DIR/contracts_data/ima.json"
     cp $DIR/contracts_data/proxyMainnet.json $DIR/contracts_data/ima.json
     docker rm -f $IMA_IMAGE_NAME || true
 }
