@@ -20,4 +20,6 @@ source $DIR/helper.sh
 create_test_docker_network
 run_ganache $ETH_PRIVATE_KEY
 deploy_manager $MANAGER_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $NETWORK
+echo "Copying $DIR/contracts_data/manager.json -> $DIR/contracts_data/skaleManagerComponents.json"
+cp $DIR/contracts_data/manager.json $DIR/contracts_data/skaleManagerComponents.json
 deploy_ima_proxy $IMA_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE
