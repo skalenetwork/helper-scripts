@@ -1,3 +1,5 @@
 contracts_data/
 allocator_contracts_data/
 .env
+
+.DS_Store
