@@ -55,7 +55,7 @@ deploy_manager () {
 
     mkdir -p $DIR/contracts_data/openzeppelin
 
-    rm ./contracts_data/skale-manager-* || true
+    rm $DIR/contracts_data/skale-manager-* || true
 
     docker rm -f $SM_IMAGE_NAME || true
     docker pull skalenetwork/$SM_IMAGE_NAME:$1
