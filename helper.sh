@@ -66,7 +66,7 @@ deploy_manager () {
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
-        npx truffle migrate --network $5
+        npx hardhat run migrations/deploy.ts --network $5
 
     echo Copying $DIR/contracts_data/$NETWORK.json -> $DIR/contracts_data/manager.json
     cp $DIR/contracts_data/$NETWORK.json $DIR/contracts_data/manager.json
