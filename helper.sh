@@ -55,6 +55,8 @@ deploy_manager () {
 
     mkdir -p $DIR/contracts_data/openzeppelin
 
+    rm $DIR/contracts_data/skale-manager-* || true
+
     docker rm -f $SM_IMAGE_NAME || true
     docker pull skalenetwork/$SM_IMAGE_NAME:$1
     docker run \
@@ -66,10 +68,10 @@ deploy_manager () {
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
-        npx truffle migrate --network $5
+        npx hardhat run migrations/deploy.ts --network $5
 
-    echo Copying $DIR/contracts_data/$NETWORK.json -> $DIR/contracts_data/manager.json
-    cp $DIR/contracts_data/$NETWORK.json $DIR/contracts_data/manager.json
+    echo Copying $DIR/contracts_data/skale-manager-* -> $DIR/contracts_data/manager.json
+    cp $DIR/contracts_data/skale-manager-* $DIR/contracts_data/manager.json
     docker rm -f $SM_IMAGE_NAME || true
 }
 
@@ -126,8 +128,8 @@ deploy_allocator () {
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/manager.json /usr/src/allocator/scripts/manager.json"
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "$MIGRATE_CMD"
 
-    echo Copying $DIR/allocator_contracts_data/$NETWORK.json to $DIR/allocator_contracts_data/allocator.json
-    cp $DIR/allocator_contracts_data/$NETWORK.json $DIR/allocator_contracts_data/allocator.json
+    echo Copying $DIR/allocator_contracts_data/$6.json to $DIR/allocator_contracts_data/allocator.json
+    cp $DIR/allocator_contracts_data/$6.json $DIR/allocator_contracts_data/allocator.json
 
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 }
@@ -186,7 +188,7 @@ run_ganache () {
     docker rm -f ganache || true
     docker run -d --network $DOCKER_NETWORK -p 8545:8545 -p 8546:8546 \
         --name ganache trufflesuite/ganache-cli:$GANACHE_VERSION \
-        --account="0x${1},100000000000000000000000000" -l 80000000 -b 1
+        --account="0x${1},100000000000000000000000000" -l 80000000 -b 0.1
 }
 
 

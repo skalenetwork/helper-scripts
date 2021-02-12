@@ -11,7 +11,7 @@ set -e
 
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
-export NETWORK=${NETWORK:-unique}
+export NETWORK=${NETWORK:-custom}
 export GAS_PRICE=${GAS_PRICE:-10000000000}
 
 source $DIR/helper.sh
