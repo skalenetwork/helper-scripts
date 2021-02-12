@@ -126,7 +126,7 @@ deploy_allocator () {
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/manager.json /usr/src/allocator/scripts/manager.json"
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "$MIGRATE_CMD"
 
-    echo Copying $DIR/allocator_contracts_data/$NETWORK.json to $DIR/allocator_contracts_data/manager.json
+    echo Copying $DIR/allocator_contracts_data/$NETWORK.json to $DIR/allocator_contracts_data/allocator.json
     cp $DIR/allocator_contracts_data/$NETWORK.json $DIR/allocator_contracts_data/allocator.json
 
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
