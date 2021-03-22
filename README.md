@@ -1,5 +1,7 @@
 # SKALE Helper bash scripts
 
+> Export the vars in .env into your shell: `export $(egrep -v '^#' .env | xargs)`
+
 ## Direct usage
 
 ### Available scripts
@@ -17,6 +19,14 @@ export MANAGER_TAG=
 export ETH_PRIVATE_KEY=
 export MANAGER_TAG=
 ./helper-scripts/deploy_test_manager.sh
+```
+
+#### Deploy test skale-manager and IMA on ganache
+
+```bash
+export ETH_PRIVATE_KEY=
+export MANAGER_TAG=
+./helper-scripts/deploy_test_ima.sh
 ```
 
 #### Deploy test skale-manager + skale-allocator on ganache
@@ -37,6 +47,19 @@ export ENDPOINT=
 export NETWORK=
 export GAS_PRICE=
 ./helper-scripts/deploy_manager.sh
+```
+
+#### Deploy IMA
+
+Deploys IMA contracts and links them to already deployed skale-manager. Place SM ABIs to the `helper-scripts/contracts_data/manager.json` to deploy IMA.
+
+```bash
+export ETH_PRIVATE_KEY=
+export IMA_TAG=
+export ENDPOINT=
+export NETWORK=
+export GAS_PRICE=
+./helper-scripts/deploy_ima.sh
 ```
 
 #### Deploy skale-manager and skale-allocator
