@@ -65,7 +65,7 @@ class LevelDBAlloc(Alloc):
         for size_name in disk_alloc_dict:
             self.values[size_name] = {}
             for key, value in proportions.items():
-                lim = int(value * disk_alloc_dict[size_name]['skaled_leveldb_storage_part'])
+                lim = int(value * disk_alloc_dict[size_name]['max_skaled_leveldb_storage_bytes'])
                 self.values[size_name][key] = lim
 
 
