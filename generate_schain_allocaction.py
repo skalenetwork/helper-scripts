@@ -115,6 +115,14 @@ def generate_leveldb_alloc(configs: dict, env_type_name: str, schain_allocation:
     return leveldb_alloc
 
 
+def generate_rotate_after_block_values(configs: dict, env_type_name: str, schain_allocation: dict) -> ResourceAlloc:
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']
+    rotate_after_block_divider = configs['common']['schain']['base_rotate_after_block_divider']
+    rotate_after_block_values = ResourceAlloc(int(disk_size_bytes / rotate_after_block_divider))
+    schain_allocation[env_type_name]['rotate_after_block'] = rotate_after_block_values.to_dict()
+    return rotate_after_block_values
+
+
 def generate_schain_allocation(skale_node_path: str) -> None:
     configs_filepath = os.path.join(skale_node_path, 'configs.yml')
     schain_allocation_filepath = os.path.join(skale_node_path, 'schain_allocation.yml')
@@ -126,6 +134,7 @@ def generate_schain_allocation(skale_node_path: str) -> None:
         disk_alloc = generate_disk_alloc(configs, env_type_name, schain_allocation)
         volume_alloc = generate_volume_alloc(configs, env_type_name, schain_allocation, disk_alloc)
         generate_leveldb_alloc(configs, env_type_name, schain_allocation, volume_alloc)
+        generate_rotate_after_block_values(configs, env_type_name, schain_allocation)
 
     save_yaml(
         filepath=schain_allocation_filepath,
