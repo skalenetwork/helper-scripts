@@ -65,7 +65,7 @@ class LevelDBAlloc(Alloc):
         for size_name in disk_alloc_dict:
             self.values[size_name] = {}
             for key, value in proportions.items():
-                lim = int(value * disk_alloc_dict[size_name]['max_skaled_leveldb_storage_bytes'])
+                lim = int(value * disk_alloc_dict[size_name]['max_skaled_leveldb_storage_bytes'])  # noqa
                 self.values[size_name][key] = lim
 
 
@@ -88,60 +88,79 @@ def save_yaml(filepath, data, comments=None):
         yaml.dump(data, outfile, default_flow_style=False)
 
 
-def generate_disk_alloc(configs: dict, env_type_name: str, schain_allocation: dict) -> ResourceAlloc:
+def generate_disk_alloc(configs: dict,
+                        env_type_name: str,
+                        schain_allocation: dict) -> ResourceAlloc:
     """Generates disk allocation for the provided env type"""
-    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']  # noqa
     free_disk_space = calculate_free_disk_space(disk_size_bytes)
     disk_alloc = ResourceAlloc(free_disk_space)
     schain_allocation[env_type_name]['disk'] = disk_alloc.to_dict()
     return disk_alloc
 
 
-def generate_volume_alloc(configs: dict, env_type_name: str, schain_allocation: dict,
+def generate_volume_alloc(configs: dict, env_type_name: str,
+                          schain_allocation: dict,
                           disk_alloc: ResourceAlloc) -> SChainVolumeAlloc:
-    """Generates volume partitioning for the provided env type and disk allocation"""
+    """Generates volume partitioning """
+    """for the provided env type and disk allocation"""
     proportions = configs['common']['schain']['volume']
     volume_alloc = SChainVolumeAlloc(disk_alloc.to_dict(), proportions)
     schain_allocation[env_type_name]['volume'] = volume_alloc.to_dict()
     return volume_alloc
 
 
-def generate_leveldb_alloc(configs: dict, env_type_name: str, schain_allocation: dict,
+def generate_leveldb_alloc(configs: dict,
+                           env_type_name: str, schain_allocation: dict,
                            volume_alloc: SChainVolumeAlloc) -> LevelDBAlloc:
-    """Generates LevelDB partitioning for the provided env type and volume partitioning"""
+    """Generates LevelDB partitioning """
+    """for the provided env type and volume partitioning"""
     leveldb_proportions = configs['common']['schain']['leveldb_storage']
     leveldb_alloc = LevelDBAlloc(volume_alloc.to_dict(), leveldb_proportions)
     schain_allocation[env_type_name]['leveldb'] = leveldb_alloc.to_dict()
     return leveldb_alloc
 
 
-def generate_rotate_after_block_values(configs: dict, env_type_name: str, schain_allocation: dict) -> ResourceAlloc:
-    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']
-    rotate_after_block_divider = configs['common']['schain']['base_rotate_after_block_divider']
-    rotate_after_block_values = ResourceAlloc(int(disk_size_bytes / rotate_after_block_divider))
-    schain_allocation[env_type_name]['rotate_after_block'] = rotate_after_block_values.to_dict()
+def generate_rotate_after_block_values(
+    configs: dict,
+    env_type_name: str,
+    schain_allocation: dict
+) -> ResourceAlloc:
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']  # noqa
+    rotate_after_block_divider = configs['common']['schain']['base_rotate_after_block_divider']  # noqa
+    rotate_after_block_values = ResourceAlloc(
+        int(disk_size_bytes / rotate_after_block_divider)
+    )
+    schain_allocation[env_type_name]['rotate_after_block'] = rotate_after_block_values.to_dict()  # noqa
     return rotate_after_block_values
 
 
 def generate_schain_allocation(skale_node_path: str) -> None:
     configs_filepath = os.path.join(skale_node_path, 'configs.yml')
-    schain_allocation_filepath = os.path.join(skale_node_path, 'schain_allocation.yml')
+    schain_allocation_filepath = os.path.join(
+        skale_node_path, 'schain_allocation.yml'
+    )
     configs = safe_load_yaml(configs_filepath)
 
     schain_allocation = {}
     for env_type_name in configs['envs']:
         schain_allocation[env_type_name] = {}
-        disk_alloc = generate_disk_alloc(configs, env_type_name, schain_allocation)
-        volume_alloc = generate_volume_alloc(configs, env_type_name, schain_allocation, disk_alloc)
-        generate_leveldb_alloc(configs, env_type_name, schain_allocation, volume_alloc)
-        generate_rotate_after_block_values(configs, env_type_name, schain_allocation)
+        disk_alloc = generate_disk_alloc(
+            configs, env_type_name, schain_allocation)
+        volume_alloc = generate_volume_alloc(
+            configs, env_type_name, schain_allocation, disk_alloc)
+        generate_leveldb_alloc(
+            configs, env_type_name, schain_allocation, volume_alloc)
+        generate_rotate_after_block_values(
+            configs, env_type_name, schain_allocation)
 
     save_yaml(
         filepath=schain_allocation_filepath,
         data=schain_allocation,
-        comments='# DO NOT MODIFY THIS FILE MANUALLY!\n# Use generate_schain_allocation.py script from helper-scripts repo.\n\n'
+        comments='# DO NOT MODIFY THIS FILE MANUALLY!\n# Use generate_schain_allocation.py script from helper-scripts repo.\n\n'  # noqa
     )
-    print(f'Generated schain_allocation.yml, results saved to {schain_allocation_filepath}')
+    print('Generated schain_allocation.yml, '
+          f'results saved to {schain_allocation_filepath}')
 
 
 if __name__ == "__main__":
