@@ -90,7 +90,7 @@ def save_yaml(filepath, data, comments=None):
 
 def generate_disk_alloc(configs: dict, env_type_name: str, schain_allocation: dict) -> ResourceAlloc:
     """Generates disk allocation for the provided env type"""
-    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk']
     free_disk_space = calculate_free_disk_space(disk_size_bytes)
     disk_alloc = ResourceAlloc(free_disk_space)
     schain_allocation[env_type_name]['disk'] = disk_alloc.to_dict()
@@ -116,7 +116,7 @@ def generate_leveldb_alloc(configs: dict, env_type_name: str, schain_allocation:
 
 
 def generate_rotate_after_block_values(configs: dict, env_type_name: str, schain_allocation: dict) -> ResourceAlloc:
-    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk']
     rotate_after_block_divider = configs['common']['schain']['base_rotate_after_block_divider']
     rotate_after_block_values = ResourceAlloc(int(disk_size_bytes / rotate_after_block_divider))
     schain_allocation[env_type_name]['rotate_after_block'] = rotate_after_block_values.to_dict()
@@ -124,7 +124,7 @@ def generate_rotate_after_block_values(configs: dict, env_type_name: str, schain
 
 
 def generate_schain_allocation(skale_node_path: str) -> None:
-    configs_filepath = os.path.join(skale_node_path, 'configs.yml')
+    configs_filepath = os.path.join(skale_node_path, 'environment_params.yaml')
     schain_allocation_filepath = os.path.join(skale_node_path, 'schain_allocation.yml')
     configs = safe_load_yaml(configs_filepath)
 
