@@ -92,7 +92,7 @@ def generate_disk_alloc(configs: dict,
                         env_type_name: str,
                         schain_allocation: dict) -> ResourceAlloc:
     """Generates disk allocation for the provided env type"""
-    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']  # noqa
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk']  # noqa
     free_disk_space = calculate_free_disk_space(disk_size_bytes)
     disk_alloc = ResourceAlloc(free_disk_space)
     schain_allocation[env_type_name]['disk'] = disk_alloc.to_dict()
@@ -126,7 +126,7 @@ def generate_rotate_after_block_values(
     env_type_name: str,
     schain_allocation: dict
 ) -> ResourceAlloc:
-    disk_size_bytes = configs['envs'][env_type_name]['server']['disk_size_bytes']  # noqa
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk']  # noqa
     rotate_after_block_divider = configs['common']['schain']['base_rotate_after_block_divider']  # noqa
     rotate_after_block_values = ResourceAlloc(
         int(disk_size_bytes / rotate_after_block_divider)
