@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import sys
 from jinja2 import Environment
 
@@ -45,8 +46,13 @@ def save_filebeat_config(instantiated_template, base_dir):
         base_dir,
         '.skale/config/filebeat.yml'
     )
-    with open(filebeat_config_path, 'w') as c_file:
-        return c_file.write(instantiated_template)
+    filebeat_temp_config_path = os.path.join(
+        base_dir,
+        '.skale/.filebeat_tmp.yml'
+    )
+    with open(filebeat_temp_config_path, 'w') as c_file:
+        c_file.write(instantiated_template)
+    shutil.move(filebeat_temp_config_path, filebeat_config_path)
 
 
 def main():
