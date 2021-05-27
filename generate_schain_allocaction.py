@@ -104,9 +104,9 @@ def generate_volume_alloc(configs: dict, env_type_name: str,
                           disk_alloc: ResourceAlloc) -> SChainVolumeAlloc:
     """Generates volume partitioning """
     """for the provided env type and disk allocation"""
-    proportions = configs['common']['schain']['volume']
+    proportions = configs['common']['schain']['volume_limits']
     volume_alloc = SChainVolumeAlloc(disk_alloc.to_dict(), proportions)
-    schain_allocation[env_type_name]['volume'] = volume_alloc.to_dict()
+    schain_allocation[env_type_name]['volume_limits'] = volume_alloc.to_dict()
     return volume_alloc
 
 
@@ -115,9 +115,9 @@ def generate_leveldb_alloc(configs: dict,
                            volume_alloc: SChainVolumeAlloc) -> LevelDBAlloc:
     """Generates LevelDB partitioning """
     """for the provided env type and volume partitioning"""
-    leveldb_proportions = configs['common']['schain']['leveldb_storage']
+    leveldb_proportions = configs['common']['schain']['leveldb_limits']
     leveldb_alloc = LevelDBAlloc(volume_alloc.to_dict(), leveldb_proportions)
-    schain_allocation[env_type_name]['leveldb'] = leveldb_alloc.to_dict()
+    schain_allocation[env_type_name]['leveldb_limits'] = leveldb_alloc.to_dict()
     return leveldb_alloc
 
 
