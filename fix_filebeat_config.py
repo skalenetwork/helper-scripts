@@ -44,7 +44,7 @@ def get_template(base_dir):
 def save_filebeat_config(instantiated_template, base_dir):
     filebeat_config_path = os.path.join(
         base_dir,
-        '.skale/config/filebeat.yml'
+        '.skale/node_data/filebeat.yml'
     )
     filebeat_temp_config_path = os.path.join(
         base_dir,
