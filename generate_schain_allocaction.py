@@ -136,7 +136,7 @@ def generate_rotate_after_block_values(
 
 
 def generate_schain_allocation(skale_node_path: str) -> None:
-    configs_filepath = os.path.join(skale_node_path, 'configs.yml')
+    configs_filepath = os.path.join(skale_node_path, 'environment_params.yaml')
     schain_allocation_filepath = os.path.join(
         skale_node_path, 'schain_allocation.yml'
     )
