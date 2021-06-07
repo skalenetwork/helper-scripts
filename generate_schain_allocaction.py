@@ -69,8 +69,25 @@ class LevelDBAlloc(Alloc):
                 self.values[size_name][key] = lim
 
 
+class SharedSpaceAlloc(Alloc):
+    def __init__(self, value: dict):
+        self.values = {
+            'test4': value / TEST_DIVIDER,
+            'test': value / TEST_DIVIDER,
+            'small': value / SMALL_DIVIDER,
+            'medium': value / MEDIUM_DIVIDER,
+            'large': value / LARGE_DIVIDER
+        }
+        for k in self.values:
+            self.values[k] = int(self.values[k])
+
+
 def calculate_free_disk_space(disk_size: int) -> int:
     return int(disk_size * DISK_FACTOR) // VOLUME_CHUNK * VOLUME_CHUNK
+
+
+def calculate_shared_space_size(disk_size: int) -> int:
+    return int(disk_size * (1 - DISK_FACTOR)) // VOLUME_CHUNK * VOLUME_CHUNK
 
 
 def safe_load_yaml(filepath):
@@ -133,6 +150,19 @@ def generate_rotate_after_block_values(
     )
     schain_allocation[env_type_name]['rotate_after_block'] = rotate_after_block_values.to_dict()  # noqa
     return rotate_after_block_values
+
+
+def generate_shared_space_values(
+    configs: dict,
+    env_type_name: str,
+    schain_allocation: dict
+) -> SharedSpaceAlloc:
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk']  # noqa
+    shared_space_size_bytes = calculate_shared_space_size(disk_size_bytes)
+    shared_space_coefficient = configs['common']['schain']['shared_space_coefficient']  # noqa
+    shared_space_values = SharedSpaceAlloc(shared_space_size_bytes * shared_space_coefficient)
+    schain_allocation[env_type_name]['shared_space'] = shared_space_values.to_dict()  # noqa
+    return shared_space_values
 
 
 def generate_schain_allocation(skale_node_path: str) -> None:
