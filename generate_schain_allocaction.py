@@ -183,6 +183,8 @@ def generate_schain_allocation(skale_node_path: str) -> None:
             configs, env_type_name, schain_allocation, volume_alloc)
         generate_rotate_after_block_values(
             configs, env_type_name, schain_allocation)
+        generate_shared_space_values(
+            configs, env_type_name, schain_allocation)
 
     save_yaml(
         filepath=schain_allocation_filepath,
