@@ -69,19 +69,6 @@ class LevelDBAlloc(Alloc):
                 self.values[size_name][key] = lim
 
 
-class SharedSpaceAlloc(Alloc):
-    def __init__(self, value: dict):
-        self.values = {
-            'test4': value / TEST_DIVIDER,
-            'test': value / TEST_DIVIDER,
-            'small': value / SMALL_DIVIDER,
-            'medium': value / MEDIUM_DIVIDER,
-            'large': value / LARGE_DIVIDER
-        }
-        for k in self.values:
-            self.values[k] = int(self.values[k])
-
-
 def calculate_free_disk_space(disk_size: int) -> int:
     return int(disk_size * DISK_FACTOR) // VOLUME_CHUNK * VOLUME_CHUNK
 
@@ -152,17 +139,17 @@ def generate_rotate_after_block_values(
     return rotate_after_block_values
 
 
-def generate_shared_space_values(
+def generate_shared_space_value(
     configs: dict,
     env_type_name: str,
     schain_allocation: dict
-) -> SharedSpaceAlloc:
+) -> int:
     disk_size_bytes = configs['envs'][env_type_name]['server']['disk']  # noqa
     shared_space_size_bytes = calculate_shared_space_size(disk_size_bytes)
     shared_space_coefficient = configs['common']['schain']['shared_space_coefficient']  # noqa
-    shared_space_values = SharedSpaceAlloc(shared_space_size_bytes * shared_space_coefficient)
-    schain_allocation[env_type_name]['shared_space'] = shared_space_values.to_dict()  # noqa
-    return shared_space_values
+    shared_space_value = int(shared_space_size_bytes * shared_space_coefficient)
+    schain_allocation[env_type_name]['shared_space'] = shared_space_value # noqa
+    return shared_space_value
 
 
 def generate_schain_allocation(skale_node_path: str) -> None:
@@ -183,7 +170,7 @@ def generate_schain_allocation(skale_node_path: str) -> None:
             configs, env_type_name, schain_allocation, volume_alloc)
         generate_rotate_after_block_values(
             configs, env_type_name, schain_allocation)
-        generate_shared_space_values(
+        generate_shared_space_value(
             configs, env_type_name, schain_allocation)
 
     save_yaml(
