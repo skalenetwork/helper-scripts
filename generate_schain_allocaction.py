@@ -73,6 +73,10 @@ def calculate_free_disk_space(disk_size: int) -> int:
     return int(disk_size * DISK_FACTOR) // VOLUME_CHUNK * VOLUME_CHUNK
 
 
+def calculate_shared_space_size(disk_size: int) -> int:
+    return int(disk_size * (1 - DISK_FACTOR)) // VOLUME_CHUNK * VOLUME_CHUNK
+
+
 def safe_load_yaml(filepath):
     with open(filepath, 'r') as stream:
         try:
@@ -135,6 +139,19 @@ def generate_rotate_after_block_values(
     return rotate_after_block_values
 
 
+def generate_shared_space_value(
+    configs: dict,
+    env_type_name: str,
+    schain_allocation: dict
+) -> int:
+    disk_size_bytes = configs['envs'][env_type_name]['server']['disk']  # noqa
+    shared_space_size_bytes = calculate_shared_space_size(disk_size_bytes)
+    shared_space_coefficient = configs['common']['schain']['shared_space_coefficient']  # noqa
+    shared_space_value = int(shared_space_size_bytes * shared_space_coefficient)
+    schain_allocation[env_type_name]['shared_space'] = shared_space_value # noqa
+    return shared_space_value
+
+
 def generate_schain_allocation(skale_node_path: str) -> None:
     configs_filepath = os.path.join(skale_node_path, 'environment_params.yaml')
     schain_allocation_filepath = os.path.join(
@@ -152,6 +169,8 @@ def generate_schain_allocation(skale_node_path: str) -> None:
         generate_leveldb_alloc(
             configs, env_type_name, schain_allocation, volume_alloc)
         generate_rotate_after_block_values(
+            configs, env_type_name, schain_allocation)
+        generate_shared_space_value(
             configs, env_type_name, schain_allocation)
 
     save_yaml(
