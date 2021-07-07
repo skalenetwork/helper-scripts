@@ -19,15 +19,22 @@
 
 import os
 import yaml
+import math
+
+
+def calc_disk_factor(divider, decimals=3):
+    factor = 10 ** decimals
+    disk_factor_raw = 1 - (1 / (divider + 1))
+    return math.floor(disk_factor_raw * factor) / factor
 
 
 LARGE_DIVIDER = 1
-MEDIUM_DIVIDER = 32
-TEST_DIVIDER = 32
+MEDIUM_DIVIDER = 8
+TEST_DIVIDER = 8
 SMALL_DIVIDER = 128
 
 VOLUME_CHUNK = 512 * SMALL_DIVIDER
-DISK_FACTOR = 0.95
+DISK_FACTOR = calc_disk_factor(MEDIUM_DIVIDER)
 
 
 class Alloc:
