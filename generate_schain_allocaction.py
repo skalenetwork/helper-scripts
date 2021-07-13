@@ -81,7 +81,7 @@ def calculate_free_disk_space(disk_size: int) -> int:
 
 
 def calculate_shared_space_size(disk_size: int, shared_space_coefficient: float) -> int:
-    return int(disk_size * (1 - DISK_FACTOR) * shared_space_coefficient) // VOLUME_CHUNK * VOLUME_CHUNK
+    return int(disk_size * (1 - DISK_FACTOR) * shared_space_coefficient) // VOLUME_CHUNK * VOLUME_CHUNK # noqa
 
 
 def safe_load_yaml(filepath):
@@ -155,7 +155,7 @@ def generate_shared_space_value(
 
     shared_space_coefficient = configs['common']['schain']['shared_space_coefficient']  # noqa
     shared_space_size_bytes = calculate_shared_space_size(disk_size_bytes, shared_space_coefficient)
-    
+
     schain_allocation[env_type_name]['shared_space'] = shared_space_size_bytes # noqa
     return shared_space_size_bytes
 
