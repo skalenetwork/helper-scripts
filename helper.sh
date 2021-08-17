@@ -3,7 +3,7 @@
 set -e
 
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
+export DOCKER_NETWORK_ENDPOINT=${DOCKER_NETWORK_ENDPOINT:-http://ganache:8545}
 
 export SM_IMAGE_NAME="skale-manager"
 export ALLOCATOR_IMAGE_NAME="skale-allocator"

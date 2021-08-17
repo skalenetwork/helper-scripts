@@ -10,7 +10,7 @@ set -e
 : "${ALLOCATOR_TAG?Need to set ALLOCATOR_TAG}"
 
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
+export DOCKER_NETWORK_ENDPOINT=${DOCKER_NETWORK_ENDPOINT:-http://ganache:8545}
 export ALLOCATOR_PRODUCTION=${ALLOCATOR_PRODUCTION:-true}
 export NETWORK=${NETWORK:-custom}
 export GAS_PRICE=${GAS_PRICE:-10000000000}
