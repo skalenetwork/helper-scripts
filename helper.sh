@@ -186,7 +186,7 @@ run_ganache () {
     echo Going to run ganache docker container...
 
     docker rm -f ganache || true
-    docker run -d --network $DOCKER_NETWORK -p 8545:8545 -p 8546:8546 \
+    docker run -d --network $DOCKER_NETWORK \
         --name ganache trufflesuite/ganache-cli:$GANACHE_VERSION \
         --account="0x${1},100000000000000000000000000" -l 80000000 -b 0.01
 }

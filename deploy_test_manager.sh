@@ -16,6 +16,6 @@ export GAS_PRICE=${GAS_PRICE:-10000000000}
 
 source $DIR/helper.sh
 
-create_test_docker_network
+# create_test_docker_network
 run_ganache $ETH_PRIVATE_KEY
 deploy_manager $MANAGER_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $NETWORK
