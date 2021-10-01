@@ -153,14 +153,14 @@ deploy_ima_proxy () {
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
     echo Going to run $IMA_IMAGE_NAME:$1 docker container...
 
-    mkdir -p $DIR/contracts_data/openzeppelin
+    mkdir -p $DIR/contracts_data/ima-openzeppelin
 
     docker rm -f $IMA_IMAGE_NAME || true
     docker pull skalenetwork/$IMA_IMAGE_NAME:$1
     docker run \
         --name $IMA_IMAGE_NAME \
         -v $DIR/contracts_data:/ima/proxy/data \
-        --mount type=volume,dst=/usr/src/proxy/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
+        --mount type=volume,dst=/ima/proxy/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/ima-openzeppelin \
         --network $DOCKER_NETWORK \
         -e URL_W3_ETHEREUM=$2 \
         -e PRIVATE_KEY_FOR_ETHEREUM=$3 \
