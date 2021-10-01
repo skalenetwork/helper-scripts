@@ -108,7 +108,7 @@ All scripts that are available in the main helper file:
 
 ```bash
 source ./helper.sh
-deploy_manager $MANAGER_TAG $ENDPOINT $ETH_PRIVATE_KEY
+deploy_manager $MANAGER_TAG $ENDPOINT $ETH_PRIVATE_KEY $ETHERSCAN
 ```
 
 ## Embeded usage

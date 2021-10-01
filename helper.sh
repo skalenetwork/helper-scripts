@@ -51,6 +51,7 @@ deploy_manager () {
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
     : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
+    : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
     echo Going to run $SM_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
@@ -67,6 +68,7 @@ deploy_manager () {
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
+        -e ETHERSCAN=$6 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
         npx hardhat run migrations/deploy.ts --network $5
 
