@@ -43,7 +43,7 @@ run_manager () {
 #:type ENDPOINT: str
 #:param ETH_PRIVATE_KEY: Ethereum private key (WITHOUT 0x prefix)
 #:type ETH_PRIVATE_KEY: str
-#:param NETWORK: Network from the truffle-config.json file
+#:param NETWORK: Network from the truffle-config.json file - not used
 #:type NETWORK: str
 deploy_manager () {
     : "${1?Pass MANAGER_TAG to ${FUNCNAME[0]}}"
