@@ -70,9 +70,9 @@ deploy_manager () {
         -e GASPRICE=$4 \
         -e ETHERSCAN=$6 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
-        npx hardhat run migrations/deploy.ts --network $5
+        /bin/bash -c "npx hardhat run migrations/deploy.ts --network custom || sleep 120"
 
-    echo Copying $DIR/contracts_data/skale-manager-* -> $DIR/contracts_data/manager.json
+    echo Copying $DIR/contracts_data/skale-manager-* to $DIR/contracts_data/manager.json
     cp $DIR/contracts_data/skale-manager-* $DIR/contracts_data/manager.json
     docker rm -f $SM_IMAGE_NAME || true
 }
