@@ -70,7 +70,7 @@ deploy_manager () {
         -e GASPRICE=$4 \
         -e ETHERSCAN=$6 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
-        /bin/bash -c "npx hardhat run migrations/deploy.ts --network custom || sleep 120"
+        /bin/bash -c "npx hardhat run migrations/deploy.ts --network custom || true"
 
     echo Copying $DIR/contracts_data/skale-manager-* to $DIR/contracts_data/manager.json
     cp $DIR/contracts_data/skale-manager-* $DIR/contracts_data/manager.json
@@ -189,7 +189,7 @@ run_ganache () {
 
     docker rm -f ganache || true
     docker run -d --network $DOCKER_NETWORK -p 8545:8545 -p 8546:8546 \
-        --name ganache trufflesuite/ganache-cli:$GANACHE_VERSION \
+        --name ganache trufflesuite/ganache:$GANACHE_VERSION \
         --account="0x${1},100000000000000000000000000" -l 80000000 -b 0.01
 }
 
