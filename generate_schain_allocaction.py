@@ -28,6 +28,7 @@ def calc_disk_factor(divider, decimals=3):
     return math.floor(disk_factor_raw * factor) / factor
 
 
+SYNC_NODE_DIVIDER = 1
 LARGE_DIVIDER = 1
 MEDIUM_DIVIDER = 8
 TEST_DIVIDER = 8
@@ -49,7 +50,8 @@ class ResourceAlloc(Alloc):
             'test': value / TEST_DIVIDER,
             'small': value / SMALL_DIVIDER,
             'medium': value / MEDIUM_DIVIDER,
-            'large': value / LARGE_DIVIDER
+            'large': value / LARGE_DIVIDER,
+            'sync_node': value / SYNC_NODE_DIVIDER
         }
         if not fractional:
             for k in self.values:
@@ -73,6 +75,10 @@ class LevelDBAlloc(Alloc):
             self.values[size_name] = {}
             for key, value in proportions.items():
                 lim = int(value * disk_alloc_dict[size_name]['max_skaled_leveldb_storage_bytes'])  # noqa
+
+                if key == 'db_storage' and size_name == 'sync_node':
+                    lim = -1
+
                 self.values[size_name][key] = lim
 
 
@@ -132,20 +138,6 @@ def generate_leveldb_alloc(configs: dict,
     return leveldb_alloc
 
 
-def generate_rotate_after_block_values(
-    configs: dict,
-    env_type_name: str,
-    schain_allocation: dict
-) -> ResourceAlloc:
-    disk_size_bytes = configs['envs'][env_type_name]['server']['disk']  # noqa
-    rotate_after_block_divider = configs['common']['schain']['base_rotate_after_block_divider']  # noqa
-    rotate_after_block_values = ResourceAlloc(
-        int(disk_size_bytes / rotate_after_block_divider)
-    )
-    schain_allocation[env_type_name]['rotate_after_block'] = rotate_after_block_values.to_dict()  # noqa
-    return rotate_after_block_values
-
-
 def generate_shared_space_value(
     configs: dict,
     env_type_name: str,
@@ -176,8 +168,6 @@ def generate_schain_allocation(skale_node_path: str) -> None:
             configs, env_type_name, schain_allocation, disk_alloc)
         generate_leveldb_alloc(
             configs, env_type_name, schain_allocation, volume_alloc)
-        generate_rotate_after_block_values(
-            configs, env_type_name, schain_allocation)
         generate_shared_space_value(
             configs, env_type_name, schain_allocation)
 
