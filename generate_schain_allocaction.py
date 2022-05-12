@@ -28,7 +28,8 @@ def calc_disk_factor(divider, decimals=3):
     return math.floor(disk_factor_raw * factor) / factor
 
 
-SYNC_NODE_DIVIDER = 1
+SYNC_NODE_DIVIDER = 8
+SYNC_NODE_DISK_DIVIDER = 1
 LARGE_DIVIDER = 1
 MEDIUM_DIVIDER = 8
 TEST_DIVIDER = 8
@@ -58,13 +59,29 @@ class ResourceAlloc(Alloc):
                 self.values[k] = int(self.values[k])
 
 
+class DiskResourceAlloc(Alloc):
+    def __init__(self, value, fractional=False):
+        self.values = {
+            'test4': value / TEST_DIVIDER,
+            'test': value / TEST_DIVIDER,
+            'small': value / SMALL_DIVIDER,
+            'medium': value / MEDIUM_DIVIDER,
+            'large': value / LARGE_DIVIDER,
+            'sync_node': value / SYNC_NODE_DISK_DIVIDER
+        }
+        if not fractional:
+            for k in self.values:
+                self.values[k] = int(self.values[k])
+
+
 class SChainVolumeAlloc(Alloc):
     def __init__(self, disk_alloc_dict: dict, proportions: dict):
         self.values = {}
         for size_name in disk_alloc_dict:
             self.values[size_name] = {}
             for key, value in proportions.items():
-                lim = int(value * disk_alloc_dict[size_name])
+                name = 'medium' if size_name == 'sync_node' else size_name
+                lim = int(value * disk_alloc_dict[name])
                 self.values[size_name][key] = lim
 
 
@@ -107,11 +124,11 @@ def save_yaml(filepath, data, comments=None):
 
 def generate_disk_alloc(configs: dict,
                         env_type_name: str,
-                        schain_allocation: dict) -> ResourceAlloc:
+                        schain_allocation: dict) -> DiskResourceAlloc:
     """Generates disk allocation for the provided env type"""
     disk_size_bytes = configs['envs'][env_type_name]['server']['disk']  # noqa
     free_disk_space = calculate_free_disk_space(disk_size_bytes)
-    disk_alloc = ResourceAlloc(free_disk_space)
+    disk_alloc = DiskResourceAlloc(free_disk_space)
     schain_allocation[env_type_name]['disk'] = disk_alloc.to_dict()
     return disk_alloc
 
