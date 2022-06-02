@@ -125,13 +125,13 @@ deploy_allocator () {
         skalenetwork/$ALLOCATOR_IMAGE_NAME:$1 \
         bash /bootstrap.sh
 
-    MIGRATE_CMD="npx truffle migrate --network $6"
+    DEPLOY_CMD="npx hardhat run migrations/deploy.ts --network custom || true"
 
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/manager.json /usr/src/allocator/scripts/manager.json"
-    docker exec $ALLOCATOR_IMAGE_NAME bash -c "$MIGRATE_CMD"
+    docker exec $ALLOCATOR_IMAGE_NAME bash -c "$DEPLOY_CMD"
 
-    echo Copying $DIR/allocator_contracts_data/$6.json to $DIR/allocator_contracts_data/allocator.json
-    cp $DIR/allocator_contracts_data/$6.json $DIR/allocator_contracts_data/allocator.json
+    echo Copying $DIR/allocator_contracts_data/skale-allocator-* to $DIR/allocator_contracts_data/allocator.json
+    cp $DIR/allocator_contracts_data/skale-allocator-* $DIR/allocator_contracts_data/allocator.json
 
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 }
