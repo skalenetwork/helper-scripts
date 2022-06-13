@@ -96,7 +96,6 @@ deploy_allocator () {
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass ALLOCATOR_PRODUCTION to ${FUNCNAME[0]}}"
     : "${5?Pass GAS_PRICE to ${FUNCNAME[0]}}"
-    : "${6?Pass NETWORK to ${FUNCNAME[0]}}"
 
     SM_ABI_FILEPATH=$DIR/contracts_data/manager.json
     if [ ! -f $SM_ABI_FILEPATH ]; then
