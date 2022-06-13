@@ -110,6 +110,8 @@ deploy_allocator () {
      mkdir -p $DIR/allocator_contracts_data/openzeppelin
 
     docker pull skalenetwork/$ALLOCATOR_IMAGE_NAME:$1
+
+    DEPLOY_TIMEOUT=1200
     docker run \
         -d \
         --name $ALLOCATOR_IMAGE_NAME \
@@ -122,7 +124,7 @@ deploy_allocator () {
         -e PRODUCTION=$4 \
         -e GASPRICE=$5 \
         skalenetwork/$ALLOCATOR_IMAGE_NAME:$1 \
-        bash /bootstrap.sh
+        sleep $DEPLOY_TIMEOUT
 
     DEPLOY_CMD="npx hardhat run migrations/deploy.ts --network custom || true"
 
