@@ -96,7 +96,6 @@ deploy_allocator () {
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass ALLOCATOR_PRODUCTION to ${FUNCNAME[0]}}"
     : "${5?Pass GAS_PRICE to ${FUNCNAME[0]}}"
-    : "${6?Pass NETWORK to ${FUNCNAME[0]}}"
 
     SM_ABI_FILEPATH=$DIR/contracts_data/manager.json
     if [ ! -f $SM_ABI_FILEPATH ]; then
@@ -111,6 +110,8 @@ deploy_allocator () {
      mkdir -p $DIR/allocator_contracts_data/openzeppelin
 
     docker pull skalenetwork/$ALLOCATOR_IMAGE_NAME:$1
+
+    DEPLOY_TIMEOUT=1200
     docker run \
         -d \
         --name $ALLOCATOR_IMAGE_NAME \
@@ -123,15 +124,15 @@ deploy_allocator () {
         -e PRODUCTION=$4 \
         -e GASPRICE=$5 \
         skalenetwork/$ALLOCATOR_IMAGE_NAME:$1 \
-        bash /bootstrap.sh
+        sleep $DEPLOY_TIMEOUT
 
-    MIGRATE_CMD="npx truffle migrate --network $6"
+    DEPLOY_CMD="npx hardhat run migrations/deploy.ts --network custom || true"
 
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/manager.json /usr/src/allocator/scripts/manager.json"
-    docker exec $ALLOCATOR_IMAGE_NAME bash -c "$MIGRATE_CMD"
+    docker exec $ALLOCATOR_IMAGE_NAME bash -c "$DEPLOY_CMD"
 
-    echo Copying $DIR/allocator_contracts_data/$6.json to $DIR/allocator_contracts_data/allocator.json
-    cp $DIR/allocator_contracts_data/$6.json $DIR/allocator_contracts_data/allocator.json
+    echo Copying $DIR/allocator_contracts_data/skale-allocator-* to $DIR/allocator_contracts_data/allocator.json
+    cp $DIR/allocator_contracts_data/skale-allocator-* $DIR/allocator_contracts_data/allocator.json
 
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 }
