@@ -28,8 +28,6 @@ def calc_disk_factor(divider, decimals=3):
     return math.floor(disk_factor_raw * factor) / factor
 
 
-SYNC_NODE_DIVIDER = 8
-SYNC_NODE_DISK_DIVIDER = 1
 LARGE_DIVIDER = 1
 MEDIUM_DIVIDER = 8
 TEST_DIVIDER = 8
@@ -51,8 +49,7 @@ class ResourceAlloc(Alloc):
             'test': value / TEST_DIVIDER,
             'small': value / SMALL_DIVIDER,
             'medium': value / MEDIUM_DIVIDER,
-            'large': value / LARGE_DIVIDER,
-            'sync_node': value / SYNC_NODE_DIVIDER
+            'large': value / LARGE_DIVIDER
         }
         if not fractional:
             for k in self.values:
@@ -66,8 +63,7 @@ class DiskResourceAlloc(Alloc):
             'test': value / TEST_DIVIDER,
             'small': value / SMALL_DIVIDER,
             'medium': value / MEDIUM_DIVIDER,
-            'large': value / LARGE_DIVIDER,
-            'sync_node': value / SYNC_NODE_DISK_DIVIDER
+            'large': value / LARGE_DIVIDER
         }
         if not fractional:
             for k in self.values:
@@ -80,8 +76,7 @@ class SChainVolumeAlloc(Alloc):
         for size_name in disk_alloc_dict:
             self.values[size_name] = {}
             for key, value in proportions.items():
-                name = 'medium' if size_name == 'sync_node' else size_name
-                lim = int(value * disk_alloc_dict[name])
+                lim = int(value * disk_alloc_dict[size_name])
                 self.values[size_name][key] = lim
 
 
@@ -92,10 +87,6 @@ class LevelDBAlloc(Alloc):
             self.values[size_name] = {}
             for key, value in proportions.items():
                 lim = int(value * disk_alloc_dict[size_name]['max_skaled_leveldb_storage_bytes'])  # noqa
-
-                if key == 'db_storage' and size_name == 'sync_node':
-                    lim = -1
-
                 self.values[size_name][key] = lim
 
 
