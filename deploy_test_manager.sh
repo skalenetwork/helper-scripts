@@ -9,8 +9,6 @@ set -ea
 : "${ETH_PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
 : "${MANAGER_TAG?Need to set MANAGER_TAG}"
 
-
-
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 export NETWORK=${NETWORK:-custom}
