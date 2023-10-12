@@ -20,8 +20,21 @@ source $DIR/helper.sh
 
 export ALLOCATOR_NETWORK=${ALLOCATOR_NETWORK:-unique}
 
-create_test_docker_network
-run_ganache $ETH_PRIVATE_KEY
+if [[ $CUSTOM_NETWORK ]]; then
+    create_test_docker_network
+    DOCKER_NETWORK_ENDPOINT=http://ganache:8545
+    DOCKER_NETWORK=testnet
+else
+    DOCKER_NETWORK_ENDPOINT=http://127.0.0.1:8545
+    DOCKER_NETWORK=host
+fi
+
+
+if [[ $GANACHE ]]; then
+    run_ganache $ETH_PRIVATE_KEY
+fi
+
+
 deploy_manager $MANAGER_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $NETWORK $ETHERSCAN
 deploy_allocator $ALLOCATOR_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $ALLOCATOR_PRODUCTION $GAS_PRICE $ALLOCATOR_NETWORK
 
