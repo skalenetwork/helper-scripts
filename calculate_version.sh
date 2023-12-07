@@ -23,6 +23,10 @@ if [[ $BRANCH == 'stable' ]]; then
     exit 1
 fi
 
+if [[ $BRANCH =~ ^v[0-9] ]]; then
+    BRANCH="develop"
+fi
+
 git fetch --tags > /dev/null
 
 for (( NUMBER=0; ; NUMBER++ ))
