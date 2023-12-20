@@ -58,19 +58,30 @@ deploy_manager () {
 
     rm $DIR/contracts_data/skale-manager-* || true
 
+    deploy="npx hardhat run migrations/deploy.ts --network custom"
+    post_deploy="cp .openzeppelin/* openzeppelin-artifacts/"
+    cmd="${deploy} && ${post_deploy}"
+    anvil_response=$(curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"anvil_nodeInfo" ,"id":1}' ${ENDPOINT})
+    echo $anvil_response
+    if [[ $anvil_response != *"error"* ]]; then
+        anvil_fix="sed -i 's/devInstanceMetadata.forkedNetwork !== undefined/false/g' node_modules/@openzeppelin/upgrades-core/dist/manifest.js"
+        cmd="${anvil_fix} && ${cmd}"
+    fi
+    echo CMD $cmd
+
     docker rm -f $SM_IMAGE_NAME || true
     docker pull skalenetwork/$SM_IMAGE_NAME:$1
     docker run \
         --name $SM_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
-        --mount type=volume,dst=/usr/src/manager/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
+        --mount type=volume,dst=/usr/src/manager/openzeppelin-artifacts,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
         -e ETHERSCAN=$6 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
-        /bin/bash -c "npx hardhat run migrations/deploy.ts --network custom || true"
+        /bin/bash -c "$cmd"
 
     echo Copying $DIR/contracts_data/skale-manager-* to $DIR/contracts_data/manager.json
     cp $DIR/contracts_data/skale-manager-* $DIR/contracts_data/manager.json
