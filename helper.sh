@@ -7,7 +7,7 @@ export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 
 export SM_IMAGE_NAME="skale-manager"
 export ALLOCATOR_IMAGE_NAME="skale-allocator"
-export IMA_IMAGE_NAME="ima"
+export IMA_IMAGE_NAME="ima-contracts"
 export SGX_WALLET_CONTAINER_NAME="sgx-simulator"
 
 export DOCKER_NETWORK=${DOCKER_NETWORK:-testnet}
@@ -171,18 +171,23 @@ deploy_ima_proxy () {
 
     docker rm -f $IMA_IMAGE_NAME || true
     docker pull skalenetwork/$IMA_IMAGE_NAME:$1
+
+    deploy="pwd && ls -altr && yarn deploy-to-mainnet"
+    post_deploy="cp .openzeppelin/* openzeppelin-artifacts/"
+    cmd="${deploy} && ${post_deploy}"
+    echo CMD $cmd
+
     docker run \
         --name $IMA_IMAGE_NAME \
-        -v $DIR/contracts_data:/ima/proxy/data \
-        --mount type=volume,dst=/ima/proxy/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/ima-openzeppelin \
+        -v $DIR/contracts_data:/app/data \
+        --mount type=volume,dst=/app/openzeppelin-artifacts,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/ima-openzeppelin \
         --network $DOCKER_NETWORK \
         -e URL_W3_ETHEREUM=$2 \
         -e PRIVATE_KEY_FOR_ETHEREUM=$3 \
         -e GASPRICE=$4 \
         -e NETWORK_FOR_ETHEREUM="mainnet" \
-        --workdir="/ima/proxy" \
         skalenetwork/$IMA_IMAGE_NAME:$1 \
-        yarn deploy-to-mainnet
+        bash -c "$cmd"
 
     echo "Copying $DIR/contracts_data/proxyMainnet.json -> $DIR/contracts_data/ima.json"
     cp $DIR/contracts_data/proxyMainnet.json $DIR/contracts_data/ima.json
