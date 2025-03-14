@@ -165,6 +165,7 @@ deploy_ima_proxy () {
     : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
     : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
+    : "${5?Pass SKALE_MANAGER_ADDRESS to ${FUNCNAME[0]}}"
     echo Going to run $IMA_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/ima-openzeppelin
@@ -185,6 +186,7 @@ deploy_ima_proxy () {
         -e URL_W3_ETHEREUM=$2 \
         -e PRIVATE_KEY_FOR_ETHEREUM=$3 \
         -e GASPRICE=$4 \
+        -e SKALE_MANAGER_ADDRESS=$5 \
         -e NETWORK_FOR_ETHEREUM="mainnet" \
         skalenetwork/$IMA_IMAGE_NAME:$1 \
         bash -c "$cmd"
