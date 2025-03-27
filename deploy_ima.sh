@@ -22,4 +22,5 @@ fi
 source $DIR/helper.sh
 echo "Copying $DIR/contracts_data/manager.json -> $DIR/contracts_data/skaleManagerComponents.json"
 cp $DIR/contracts_data/manager.json $DIR/contracts_data/skaleManagerComponents.json
-deploy_ima_proxy $IMA_TAG $ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE
+SKALE_MANAGER_ADDRESS=$(jq -r '.skale_manager_address' $DIR/contracts_data/manager.json)
+deploy_ima_proxy $IMA_TAG $ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $SKALE_MANAGER_ADDRESS
