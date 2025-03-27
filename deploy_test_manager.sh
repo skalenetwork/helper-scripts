@@ -26,10 +26,10 @@ else
     DOCKER_NETWORK=host
 fi
 
-sleep 5
-
 if [[ $GANACHE ]]; then
     run_ganache $ETH_PRIVATE_KEY
 fi
+
+sleep 5
 
 deploy_manager $MANAGER_TAG $DOCKER_NETWORK_ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $NETWORK $ETHERSCAN
