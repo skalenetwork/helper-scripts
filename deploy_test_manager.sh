@@ -26,6 +26,7 @@ else
     DOCKER_NETWORK=host
 fi
 
+sleep 5
 
 if [[ $GANACHE ]]; then
     run_ganache $ETH_PRIVATE_KEY
