@@ -6,7 +6,6 @@
 
 set -ea
 
-: "${ETH_PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
 : "${MIRAGE_TAG?Need to set MIRAGE_TAG}"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -22,10 +21,16 @@ if [[ $ENDPOINT ]]; then
     DEPLOYMENT_ENDPOINT=$ENDPOINT
 fi
 
-if [[ $GANACHE ]]; then
-    run_ganache $ETH_PRIVATE_KEY
+if [[ $RUN_ANVIL ]]; then
+    run_anvil
 fi
 
-sleep 5
+PRIVATE_KEY=$ETH_PRIVATE_KEY
+if [[ $ANVIL_PRIVATE_KEY ]]; then
+    echo "Using anvil private key"
+    PRIVATE_KEY=$ANVIL_PRIVATE_KEY
+fi
 
-deploy_mirage $MIRAGE_TAG $DEPLOYMENT_ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $NETWORK $ETHERSCAN
+: "${PRIVATE_KEY?Need to set PRIVATE_KEY}"
+
+deploy_mirage $MIRAGE_TAG $DEPLOYMENT_ENDPOINT $PRIVATE_KEY $GAS_PRICE $NETWORK $ETHERSCAN

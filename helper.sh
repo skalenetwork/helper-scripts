@@ -93,33 +93,20 @@ deploy_manager () {
 deploy_mirage () {
     : "${1?Pass MIRAGE_TAG to ${FUNCNAME[0]}}"
     : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
-    : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
+    : "${3?Pass PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
     : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
     : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
     echo Going to run $MIRAGE_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
-
-    rm $DIR/contracts_data/skale-manager-* || true
-
-    deploy="yarn hardhat run migrations/deploy.ts --network custom"
-    post_deploy="cp .openzeppelin/* openzeppelin-artifacts/"
-    cmd="${deploy} && ${post_deploy}"
-    anvil_response=$(curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"anvil_nodeInfo" ,"id":1}' ${2})
-    echo $anvil_response
-    if [[ $anvil_response != *"error"* ]]; then
-        anvil_fix="sed -i 's/devInstanceMetadata.forkedNetwork !== undefined/false/g' node_modules/@openzeppelin/upgrades-core/dist/manifest.js"
-        cmd="${anvil_fix} && ${cmd}"
-    fi
-    echo CMD $cmd
+    cmd="yarn hardhat run migrations/deploy.ts --network custom"
 
     docker rm -f $MIRAGE_IMAGE_NAME || true
     docker pull skalenetwork/$MIRAGE_IMAGE_NAME:$1
     docker run \
         --name $MIRAGE_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
-        --mount type=volume,dst=/usr/src/manager/openzeppelin-artifacts,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
@@ -241,6 +228,16 @@ deploy_ima_proxy () {
     cp $DIR/contracts_data/proxyMainnet.json $DIR/contracts_data/ima.json
     docker rm -f $IMA_IMAGE_NAME || true
 }
+
+run_anvil () {
+    docker rm -f anvil || true
+    docker run -d --network host --name anvil ghcr.io/foundry-rs/foundry anvil
+    sleep 5
+    export ANVIL_PRIVATE_KEY=$(docker logs anvil 2>&1 | grep -A 10 "Private Keys" | grep "(0)" | awk '{print $2}')
+    echo "ANVIL_PRIVATE_KEY exported to the env: $ANVIL_PRIVATE_KEY"
+    echo $ANVIL_PRIVATE_KEY > $DIR/private_key.txt
+}
+
 
 # Run ganache container with given private key
 #
