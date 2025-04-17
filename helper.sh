@@ -8,6 +8,7 @@ export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 export SM_IMAGE_NAME="skale-manager"
 export ALLOCATOR_IMAGE_NAME="skale-allocator"
 export IMA_IMAGE_NAME="ima-contracts"
+export MIRAGE_IMAGE_NAME="professional"
 export SGX_WALLET_CONTAINER_NAME="sgx-simulator"
 
 export DOCKER_NETWORK=${DOCKER_NETWORK:-testnet}
@@ -87,6 +88,51 @@ deploy_manager () {
     cp $DIR/contracts_data/skale-manager-* $DIR/contracts_data/manager.json
     docker rm -f $SM_IMAGE_NAME || true
 }
+
+
+deploy_mirage () {
+    : "${1?Pass MIRAGE_TAG to ${FUNCNAME[0]}}"
+    : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
+    : "${3?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
+    : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
+    : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
+    : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
+    echo Going to run $MIRAGE_IMAGE_NAME:$1 docker container...
+
+    mkdir -p $DIR/contracts_data/openzeppelin
+
+    rm $DIR/contracts_data/skale-manager-* || true
+
+    deploy="yarn hardhat run migrations/deploy.ts --network custom"
+    post_deploy="cp .openzeppelin/* openzeppelin-artifacts/"
+    cmd="${deploy} && ${post_deploy}"
+    anvil_response=$(curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"anvil_nodeInfo" ,"id":1}' ${2})
+    echo $anvil_response
+    if [[ $anvil_response != *"error"* ]]; then
+        anvil_fix="sed -i 's/devInstanceMetadata.forkedNetwork !== undefined/false/g' node_modules/@openzeppelin/upgrades-core/dist/manifest.js"
+        cmd="${anvil_fix} && ${cmd}"
+    fi
+    echo CMD $cmd
+
+    docker rm -f $MIRAGE_IMAGE_NAME || true
+    docker pull skalenetwork/$MIRAGE_IMAGE_NAME:$1
+    docker run \
+        --name $MIRAGE_IMAGE_NAME \
+        -v $DIR/contracts_data:/usr/src/manager/data \
+        --mount type=volume,dst=/usr/src/manager/openzeppelin-artifacts,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
+        --network $DOCKER_NETWORK \
+        -e ENDPOINT=$2 \
+        -e PRIVATE_KEY=$3 \
+        -e GASPRICE=$4 \
+        -e ETHERSCAN=$6 \
+        skalenetwork/$MIRAGE_IMAGE_NAME:$1 \
+        /bin/bash -c "$cmd"
+
+    echo Copying $DIR/contracts_data/mirage-manager-* to $DIR/contracts_data/mirage.json
+    cp $DIR/contracts_data/mirage-manager-* $DIR/contracts_data/mirage.json
+    docker rm -f $MIRAGE_IMAGE_NAME || true
+}
+
 
 
 # Deploy SKALE Allocator to the specified RPC endpoint

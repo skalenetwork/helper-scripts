@@ -6,6 +6,22 @@
 
 ### Available scripts
 
+#### Deploy `mirage-manager` contracts locally or on custom network
+
+Run local ganache instance and deploy `mirage-manager` contracts on it:
+
+```bash
+ETH_PRIVATE_KEY= GANACHE=true MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
+```
+
+Deploy `mirage-manager` contracts to the custom network:
+
+```bash
+ETH_PRIVATE_KEY= ENDPOINT=https://example.com MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
+```
+
+ABI and address of the deployed contracts will be saved in `contracts_data/mirage.json` file.
+
 #### Run specified version of SKALE Manager and login into it
 
 ```bash
@@ -99,10 +115,10 @@ export VERSION=
 
 All scripts that are available in the main helper file:
 
-- deploy_manager
-- deploy_allocator
-- run_ganache
-- run_sgx_simulator
+* deploy\_manager
+* deploy\_allocator
+* run\_ganache
+* run\_sgx\_simulator
 
 #### Usage example
 
@@ -127,7 +143,6 @@ git submodule init
 ```bash
 git submodule update --remote
 ```
-
 
 ### Add submodules to your Github Actions build
 
