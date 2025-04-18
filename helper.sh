@@ -62,12 +62,6 @@ deploy_manager () {
     deploy="npx hardhat run migrations/deploy.ts --network custom"
     post_deploy="cp .openzeppelin/* openzeppelin-artifacts/"
     cmd="${deploy} && ${post_deploy}"
-    anvil_response=$(curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"anvil_nodeInfo" ,"id":1}' ${ENDPOINT})
-    echo $anvil_response
-    if [[ $anvil_response != *"error"* ]]; then
-        anvil_fix="sed -i 's/devInstanceMetadata.forkedNetwork !== undefined/false/g' node_modules/@openzeppelin/upgrades-core/dist/manifest.js"
-        cmd="${anvil_fix} && ${cmd}"
-    fi
     echo CMD $cmd
 
     docker rm -f $SM_IMAGE_NAME || true
@@ -84,8 +78,9 @@ deploy_manager () {
         skalenetwork/$SM_IMAGE_NAME:$1 \
         /bin/bash -c "$cmd"
 
-    echo Copying $DIR/contracts_data/skale-manager-* to $DIR/contracts_data/manager.json
-    cp $DIR/contracts_data/skale-manager-* $DIR/contracts_data/manager.json
+    echo Copying $DIR/contracts_data/skale-manager-*-abi.json to $DIR/contracts_data/manager.json
+    cp $DIR/contracts_data/skale-manager-*-abi.json $DIR/contracts_data/manager.json
+    cp $DIR/contracts_data/skale-manager-*-contracts.json $DIR/contracts_data/manager-contracts.json
     docker rm -f $SM_IMAGE_NAME || true
 }
 
@@ -229,30 +224,13 @@ deploy_ima_proxy () {
     docker rm -f $IMA_IMAGE_NAME || true
 }
 
+
 run_anvil () {
-    docker rm -f anvil || true
-    docker run -d --network host --name anvil ghcr.io/foundry-rs/foundry anvil
+    docker run -d --network host --name anvil ghcr.io/foundry-rs/foundry anvil || true
     sleep 5
     export ANVIL_PRIVATE_KEY=$(docker logs anvil 2>&1 | grep -A 10 "Private Keys" | grep "(0)" | awk '{print $2}')
     echo "ANVIL_PRIVATE_KEY exported to the env: $ANVIL_PRIVATE_KEY"
     echo $ANVIL_PRIVATE_KEY > $DIR/private_key.txt
-}
-
-
-# Run ganache container with given private key
-#
-# Previous ganache container will be removed
-#
-#:param ETH_PRIVATE_KEY: Ethereum private key (WITHOUT 0x prefix)
-#:type ETH_PRIVATE_KEY: str
-run_ganache () {
-    : "${1?Pass ETH_PRIVATE_KEY to ${FUNCNAME[0]}}"
-    echo Going to run ganache docker container...
-
-    docker rm -f ganache || true
-    docker run -d --network $DOCKER_NETWORK -p 8545:8545 -p 8546:8546 \
-        --name ganache trufflesuite/ganache:$GANACHE_VERSION \
-        --account="0x${1},100000000000000000000000000" -l 80000000 -b 0.01
 }
 
 
@@ -283,3 +261,19 @@ create_universal_abi_file () {
     : "${3?Pass RESULT_FILEPATH to ${FUNCNAME[0]}}"
     python $DIR/create_universal_abi_file.py $1 $2 $3
 }
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    if [[ "$#" -gt 0 ]]; then
+        COMMAND=$1
+        shift
+        if declare -f "$COMMAND" > /dev/null; then
+            "$COMMAND" "$@"
+        else
+            echo "Error: '$COMMAND' is not a valid function name." >&2
+            exit 1
+        fi
+    else
+        echo "Usage: bash $0 <function_name> [parameters...]"
+        exit 1
+    fi
+fi

@@ -2,136 +2,172 @@
 
 > Export the vars in .env into your shell: `export $(egrep -v '^#' .env | xargs)`
 
-## Direct usage
+## Deployment Options
 
-### Available scripts
+### Deploy SKALE Manager
 
-#### Deploy `mirage-manager` contracts locally or on custom network
+#### Option 1: Deploy with Local Anvil Node
 
-Run local anvil instance and deploy `mirage-manager` contracts on it:
+To deploy using a local Anvil node, set the `RUN_ANVIL` environment variable to `true`. This will automatically start a local Anvil node and use its private key for deployment.
+
+Required environment variables:
+
+* `RUN_ANVIL=true`
+* `MANAGER_TAG` (tag for the SKALE Manager version)
+
+Example:
+
+```bash
+MANAGER_TAG=<manager_tag> RUN_ANVIL=true bash deploy_manager.sh
+```
+
+#### Option 2: Deploy to a Custom Network
+
+To deploy to a custom network, provide the following environment variables:
+
+Required environment variables:
+
+* `ETH_PRIVATE_KEY` (Ethereum private key without the `0x` prefix)
+* `ENDPOINT` (Ethereum RPC endpoint)
+* `MANAGER_TAG` (tag for the SKALE Manager version)
+* `GAS_PRICE` (optional, default: `10000000000`)
+* `NETWORK` (optional, default: `custom`)
+* `ETHERSCAN` (optional, default: `1234`)
+
+Example:
+
+```bash
+ETH_PRIVATE_KEY=<your_private_key> MANAGER_TAG=<manager_tag> ENDPOINT=<rpc_endpoint> GAS_PRICE=<gas_price> NETWORK=<network_name> ETHERSCAN=<etherscan_api_key> bash deploy_manager.sh
+```
+
+### Deploy IMA
+
+#### Option 1: Deploy with Local Anvil Node
+
+To deploy using a local Anvil node, set the `RUN_ANVIL` environment variable to `true`. This will automatically start a local Anvil node and use its private key for deployment.
+
+Required environment variables:
+
+* `RUN_ANVIL=true`
+* `IMA_TAG` (tag for the IMA version)
+
+Example:
+
+```bash
+IMA_TAG=<ima_tag> RUN_ANVIL=true bash deploy_ima.sh
+```
+
+#### Option 2: Deploy to a Custom Network
+
+To deploy to a custom network, provide the following environment variables:
+
+Required environment variables:
+
+* `ETH_PRIVATE_KEY` (Ethereum private key without the `0x` prefix)
+* `ENDPOINT` (Ethereum RPC endpoint)
+* `IMA_TAG` (tag for the IMA version)
+* `GAS_PRICE` (optional, default: `10000000000`)
+* `NETWORK` (optional, default: `custom`)
+* `ETHERSCAN` (optional, default: `1234`)
+
+Example:
+
+```bash
+ETH_PRIVATE_KEY=<your_private_key> IMA_TAG=<ima_tag> ENDPOINT=<rpc_endpoint> GAS_PRICE=<gas_price> NETWORK=<network_name> ETHERSCAN=<etherscan_api_key> bash deploy_ima.sh
+```
+
+### Deploy Mirage-Manager
+
+#### Option 1: Deploy with Local Anvil Node
+
+Run a local Anvil instance and deploy `mirage-manager` contracts on it:
+
+Required environment variables:
+
+* `RUN_ANVIL=true`
+* `MIRAGE_TAG` (tag for the Mirage-Manager version)
+
+Example:
 
 ```bash
 RUN_ANVIL=true MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
 ```
 
-Deploy `mirage-manager` contracts to the custom network:
+#### Option 2: Deploy to a Custom Network
+
+Deploy `mirage-manager` contracts to a custom network:
+
+Required environment variables:
+
+* `ETH_PRIVATE_KEY` (Ethereum private key without the `0x` prefix)
+* `ENDPOINT` (Ethereum RPC endpoint)
+* `MIRAGE_TAG` (tag for the Mirage-Manager version)
+
+Example:
 
 ```bash
-ETH_PRIVATE_KEY= ENDPOINT=https://example.com MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
+ETH_PRIVATE_KEY=<your_private_key> ENDPOINT=https://example.com MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
 ```
 
 ABI and address of the deployed contracts will be saved in `contracts_data/mirage.json` file.
 
-#### Run specified version of SKALE Manager and login into it
+### Deploy SKALE Allocator
+
+#### Option 1: Deploy with Local Anvil Node
+
+To deploy using a local Anvil node, set the `RUN_ANVIL` environment variable to `true`. This will automatically start a local Anvil node and use its private key for deployment.
+
+Required environment variables:
+
+* `RUN_ANVIL=true`
+* `ALLOCATOR_TAG` (tag for the Allocator version)
+
+Example:
 
 ```bash
-export MANAGER_TAG=
-./helper-scripts/run_skale_manager.sh
+ALLOCATOR_TAG=<allocator_tag> RUN_ANVIL=true bash deploy_allocator.sh
 ```
 
-#### Deploy test skale-manager on ganache
+#### Option 2: Deploy to a Custom Network
+
+To deploy to a custom network, provide the following environment variables:
+
+Required environment variables:
+
+* `ETH_PRIVATE_KEY` (Ethereum private key without the `0x` prefix)
+* `ENDPOINT` (Ethereum RPC endpoint)
+* `ALLOCATOR_TAG` (tag for the Allocator version)
+* `GAS_PRICE` (optional, default: `10000000000`)
+* `NETWORK` (optional, default: `custom`)
+
+Example:
 
 ```bash
-export ETH_PRIVATE_KEY=
-export MANAGER_TAG=
-./helper-scripts/deploy_test_manager.sh
+ETH_PRIVATE_KEY=<your_private_key> ALLOCATOR_TAG=<allocator_tag> ENDPOINT=<rpc_endpoint> GAS_PRICE=<gas_price> NETWORK=<network_name> bash deploy_allocator.sh
 ```
 
-#### Deploy test skale-manager and IMA on ganache
+## Additional Scripts
+
+### Calculate Version
+
+To calculate the version, use the following script:
+
+Required environment variables:
+
+* `BRANCH` (branch name)
+* `VERSION` (base version)
+
+Example:
 
 ```bash
-export ETH_PRIVATE_KEY=
-export MANAGER_TAG=
-./helper-scripts/deploy_test_ima.sh
+BRANCH=<branch_name> VERSION=<base_version> ./helper-scripts/calculate_version.sh
 ```
 
-#### Deploy test skale-manager + skale-allocator on ganache
-
-```bash
-export ETH_PRIVATE_KEY=
-export MANAGER_TAG=
-export ALLOCATOR_TAG=
-./helper-scripts/deploy_test_allocator.sh
-```
-
-#### Deploy skale-manager
-
-```bash
-export ETH_PRIVATE_KEY=
-export MANAGER_TAG=
-export ENDPOINT=
-export NETWORK=
-export GAS_PRICE=
-./helper-scripts/deploy_manager.sh
-```
-
-#### Deploy IMA
-
-Deploys IMA contracts and links them to already deployed skale-manager. Place SM ABIs to the `helper-scripts/contracts_data/manager.json` to deploy IMA.
-
-```bash
-export ETH_PRIVATE_KEY=
-export IMA_TAG=
-export ENDPOINT=
-export NETWORK=
-export GAS_PRICE=
-./helper-scripts/deploy_ima.sh
-```
-
-#### Deploy skale-manager and skale-allocator
-
-```bash
-export ETH_PRIVATE_KEY=
-export MANAGER_TAG=
-export ALLOCATOR_TAG=
-export ENDPOINT=
-export NETWORK=
-./helper-scripts/deploy_manager_allocator.sh
-```
-
-#### Deploy skale-allocator and link to skale-manager
-
-You should put `manager.json` (ABI of skale-manager) to `contracts_data` folder in this repo
-
-```bash
-export ETH_PRIVATE_KEY=
-export ALLOCATOR_TAG=
-export ENDPOINT=
-export GAS_PRICE=
-export NETWORK=
-
-./helper-scripts/deploy_allocator.sh
-```
-
-#### Calculate version
-
-```bash
-export BRANCH=
-export VERSION=
-./helper-scripts/calculate_version.sh
-```
-
-### Available functions
-
-All scripts that are available in the main helper file:
-
-* deploy\_manager
-* deploy\_allocator
-* run\_ganache
-* run\_sgx\_simulator
-
-#### Usage example
-
-```bash
-source ./helper.sh
-deploy_manager $MANAGER_TAG $ENDPOINT $ETH_PRIVATE_KEY $ETHERSCAN
-```
-
-## Embeded usage
+## Embedded Usage
 
 ### Add helper-scripts to your repo
 
-1.Add git submodule to your repo
+1. Add git submodule to your repo
 
 ```bash
 git submodule add -b develop https://github.com/skalenetwork/helper-scripts.git

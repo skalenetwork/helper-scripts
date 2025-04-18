@@ -6,21 +6,30 @@
 
 set -e
 
-: "${ETH_PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
 : "${IMA_TAG?Need to set IMA_TAG}"
-: "${ENDPOINT?Need to set ENDPOINT}"
-: "${GAS_PRICE?Need to set GAS_PRICE}"
 
-export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-export NETWORK=${NETWORK:-custom}
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DEPLOYMENT_ENDPOINT=${ENDPOINT:-'http://127.0.0.1:8545'}
+GAS_PRICE=${GAS_PRICE:-10000000000}
+ETHERSCAN=${ETHERSCAN:-1234}
+NETWORK=${NETWORK:-custom}
+DOCKER_NETWORK=${DOCKER_NETWORK:-host}
 
-if [ ! -f $DIR/contracts_data/manager.json ]; then
-    echo "$DIR/contracts_data/manager.json not found, could not deploy IMA!"
+source "$DIR/helper.sh"
+
+[[ $RUN_ANVIL ]] && run_anvil
+
+PRIVATE_KEY=${ANVIL_PRIVATE_KEY:-$ETH_PRIVATE_KEY}
+: "${PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
+
+MANAGER_JSON="$DIR/contracts_data/manager.json"
+if [[ ! -f $MANAGER_JSON ]]; then
+    echo "$MANAGER_JSON not found, could not deploy IMA!"
     exit 1
 fi
 
-source $DIR/helper.sh
-echo "Copying $DIR/contracts_data/manager.json -> $DIR/contracts_data/skaleManagerComponents.json"
-cp $DIR/contracts_data/manager.json $DIR/contracts_data/skaleManagerComponents.json
-SKALE_MANAGER_ADDRESS=$(jq -r '.skale_manager_address' $DIR/contracts_data/manager.json)
-deploy_ima_proxy $IMA_TAG $ENDPOINT $ETH_PRIVATE_KEY $GAS_PRICE $SKALE_MANAGER_ADDRESS
+echo "Copying $MANAGER_JSON -> $DIR/contracts_data/skaleManagerComponents.json"
+cp "$MANAGER_JSON" "$DIR/contracts_data/skaleManagerComponents.json"
+
+SKALE_MANAGER_ADDRESS=$(jq -r '.skale_manager_address' "$MANAGER_JSON")
+deploy_ima_proxy "$IMA_TAG" "$DEPLOYMENT_ENDPOINT" "$PRIVATE_KEY" "$GAS_PRICE" "$SKALE_MANAGER_ADDRESS"
