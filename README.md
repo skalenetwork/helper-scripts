@@ -8,10 +8,10 @@
 
 #### Deploy `mirage-manager` contracts locally or on custom network
 
-Run local ganache instance and deploy `mirage-manager` contracts on it:
+Run local anvil instance and deploy `mirage-manager` contracts on it:
 
 ```bash
-ETH_PRIVATE_KEY= GANACHE=true MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
+RUN_ANVIL=true MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
 ```
 
 Deploy `mirage-manager` contracts to the custom network:
