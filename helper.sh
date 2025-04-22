@@ -226,7 +226,7 @@ deploy_ima_proxy () {
 
 
 run_anvil () {
-    docker run -d --network host --name anvil ghcr.io/foundry-rs/foundry anvil || true
+    docker run -d --network host --name anvil ghcr.io/foundry-rs/foundry:rc-3 "anvil --gas-price 0 --block-base-fee-per-gas 0 --disable-min-priority-fee" || true
     sleep 15
     export ANVIL_PRIVATE_KEY=$(docker logs anvil 2>&1 | grep -A 10 "Private Keys" | grep "(0)" | awk '{print $2}')
     echo "ANVIL_PRIVATE_KEY exported to the env: $ANVIL_PRIVATE_KEY"
