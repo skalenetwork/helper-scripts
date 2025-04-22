@@ -4,3 +4,5 @@ allocator_contracts_data/
 
 .DS_Store
 venv/
+
+private_key.txt
