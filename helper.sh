@@ -110,8 +110,8 @@ deploy_mirage () {
         skalenetwork/$MIRAGE_IMAGE_NAME:$1 \
         /bin/bash -c "$cmd"
 
-    echo Copying $DIR/contracts_data/mirage-manager-* to $DIR/contracts_data/mirage.json
-    cp $DIR/contracts_data/mirage-manager-* $DIR/contracts_data/mirage.json
+    echo Copying $DIR/contracts_data/mirage-manager-${MIRAGE_TAG}-* to $DIR/contracts_data/mirage.json
+    cp $DIR/contracts_data/mirage-manager-${MIRAGE_TAG}-* $DIR/contracts_data/mirage.json
     docker rm -f $MIRAGE_IMAGE_NAME || true
 }
 
