@@ -94,7 +94,6 @@ deploy_mirage () {
     : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
     : "${7?Pass CHAIN_NAME to ${FUNCNAME[0]}}"
     : "${8?Pass TARGET to ${FUNCNAME[0]}}"
-    : "${9?Pass ENDPOINT to ${FUNCNAME[0]}}"
     echo Going to run $MIRAGE_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
