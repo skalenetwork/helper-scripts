@@ -17,13 +17,14 @@ fi
 : "${MIRAGE_TAG:?Need to set MIRAGE_TAG}"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-DEPLOYMENT_ENDPOINT=${ENDPOINT:-'http://127.0.0.1:8545'}
+DEPLOYMENT_ENDPOINT=${MAINNET_ENDPOINT:-'http://127.0.0.1:8545'}
 GAS_PRICE=${GAS_PRICE:-10000000000}
 ETHERSCAN=${ETHERSCAN:-1234}
 NETWORK=${NETWORK:-custom}
 DOCKER_NETWORK=${DOCKER_NETWORK:-host}
 CHAIN_NAME=${CHAIN_NAME:-"mirage-qa"}
 TARGET=${TARGET:-"legacy"}
+ENDPOINT=${ENDPOINT:-"http://127.0.0.1:8545"}
 
 source "$DIR/helper.sh"
 
