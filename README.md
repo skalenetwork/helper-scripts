@@ -87,13 +87,13 @@ Required environment variables:
 * `RUN_ANVIL=true`
 * `MIRAGE_TAG` (tag for the Mirage-Manager version)
 * `CHAIN_NAME` (name of the chain)
-* `TARGET` (deployment target)
+* `TARGET` (skale-manager alias or address)
 * `MAINNET_ENDPOINT` (mainnet RPC endpoint)
 
 Example:
 
 ```bash
-RUN_ANVIL=true MIRAGE_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<target> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_mirage.sh
+RUN_ANVIL=true MIRAGE_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<skale_manager_alias_or_address> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_mirage.sh
 ```
 
 #### Option 2: Deploy to a Custom Network
@@ -103,10 +103,10 @@ Deploy `mirage-manager` contracts to a custom network:
 Required environment variables:
 
 * `ETH_PRIVATE_KEY` (Ethereum private key without the `0x` prefix)
-* `ENDPOINT` (Ethereum RPC endpoint)
+* `ENDPOINT` (Mirage Chain RPC endpoint)
 * `MIRAGE_TAG` (tag for the Mirage-Manager version)
 * `CHAIN_NAME` (name of the chain)
-* `TARGET` (deployment target)
+* `TARGET` (skale-manager alias or address)
 * `MAINNET_ENDPOINT` (mainnet RPC endpoint)
 * `GAS_PRICE` (optional, default: `10000000000`)
 * `NETWORK` (optional, default: `custom`)
@@ -115,7 +115,7 @@ Required environment variables:
 Example:
 
 ```bash
-ETH_PRIVATE_KEY=<your_private_key> ENDPOINT=https://example.com MIRAGE_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<target> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_mirage.sh
+ETH_PRIVATE_KEY=<your_private_key> ENDPOINT=<mirage_chain_endpoint> MIRAGE_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<skale_manager_alias_or_address> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_mirage.sh
 ```
 
 ABI and address of the deployed contracts will be saved in `contracts_data/mirage.json` file.
