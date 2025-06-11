@@ -106,8 +106,9 @@ Required environment variables:
 Example:
 
 ```bash
-ETH_PRIVATE_KEY=<your_private_key> ENDPOINT=https://example.com MIRAGE_TAG=0.0.1-develop.6 bash deploy_mirage.sh
+ETH_PRIVATE_KEY=<your_private_key> ENDPOINT=https://example.com MIRAGE_TAG=0.0.1-develop.6 CHAIN_NAME=<schain-name> TARGET=<skale-manager address> bash deploy_mirage.sh
 ```
+
 
 ABI and address of the deployed contracts will be saved in `contracts_data/mirage.json` file.
 

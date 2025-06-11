@@ -92,6 +92,8 @@ deploy_mirage () {
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
     : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
     : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
+    : "${7?Pass CHAIN_NAME to ${FUNCNAME[0]}}"
+    : "${8?Pass TARGET to ${FUNCNAME[0]}}"
     echo Going to run $MIRAGE_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
@@ -99,16 +101,20 @@ deploy_mirage () {
 
     docker rm -f $MIRAGE_IMAGE_NAME || true
     docker pull skalenetwork/$MIRAGE_IMAGE_NAME:$1
+
     docker run \
         --name $MIRAGE_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
         --network $DOCKER_NETWORK \
-        -e ENDPOINT=$2 \
+        -e MAINNET_ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
         -e ETHERSCAN=$6 \
+        -e CHAIN_NAME=$7 \
+        -e TARGET=$8 \
+        -e ENDPOINT=$9 \
         skalenetwork/$MIRAGE_IMAGE_NAME:$1 \
-        /bin/bash -c "$cmd"
+        /bin/bash -c "$cmd" 
 
     echo Copying $DIR/contracts_data/mirage-manager-${MIRAGE_TAG}-* to $DIR/contracts_data/mirage.json
     cp $DIR/contracts_data/mirage-manager-${MIRAGE_TAG}-* $DIR/contracts_data/mirage.json
