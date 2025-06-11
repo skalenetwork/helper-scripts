@@ -102,6 +102,8 @@ Required environment variables:
 * `ETH_PRIVATE_KEY` (Ethereum private key without the `0x` prefix)
 * `ENDPOINT` (Ethereum RPC endpoint)
 * `MIRAGE_TAG` (tag for the Mirage-Manager version)
+* `CHAIN_NAME` chain name what should be migrated
+* `TARGET` Skale Manager address for the Ethereum 
 
 Example:
 
