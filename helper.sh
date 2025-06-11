@@ -92,6 +92,9 @@ deploy_mirage () {
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
     : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
     : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
+    : "${7?Pass CHAIN_NAME to ${FUNCNAME[0]}}"
+    : "${8?Pass TARGET to ${FUNCNAME[0]}}"
+    : "${9?Pass MAINNET_ENDPOINT to ${FUNCNAME[0]}}"
     echo Going to run $MIRAGE_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
@@ -107,6 +110,9 @@ deploy_mirage () {
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
         -e ETHERSCAN=$6 \
+        -e CHAIN_NAME=$7 \
+        -e TARGET=$8 \
+        -e MAINNET_ENDPOINT=$9 \
         skalenetwork/$MIRAGE_IMAGE_NAME:$1 \
         /bin/bash -c "$cmd"
 
@@ -261,6 +267,31 @@ create_universal_abi_file () {
     : "${3?Pass RESULT_FILEPATH to ${FUNCNAME[0]}}"
     python $DIR/create_universal_abi_file.py $1 $2 $3
 }
+
+manager_address () {
+    SM_ABI_FILEPATH=${ABI_FILEPATH:="$DIR/contracts_data/manager.json"}
+    export MANAGER_CONTRACTS=$(jq -r '.skale_manager_address' "$SM_ABI_FILEPATH")
+    echo $MANAGER_CONTRACTS
+}
+
+ima_address () {
+    IMA_ABI_FILEPATH=${IMA_ABI_FILEPATH:="$DIR/contracts_data/ima.json"}
+    export IMA_CONTRACTS=$(jq -r '.message_proxy_mainnet_address' "$IMA_ABI_FILEPATH")
+    echo $IMA_CONTRACTS
+}
+
+allocator_address () {
+    ALLOCATOR_ABI_FILEPATH=${ALLOCATOR_ABI_FILEPATH:="$DIR/allocator_contracts_data/allocator.json"}
+    export ALLOCATOR_CONTRACTS=$(jq -r '.allocator_address' "$ALLOCATOR_ABI_FILEPATH")
+    echo $ALLOCATOR_CONTRACTS
+}
+
+mirage_address () {
+    MIRAGE_ABI_FILEPATH=${MIRAGE_ABI_FILEPATH:="$DIR/contracts_data/mirage.json"}
+    export MIRAGE_CONTRACTS=$(jq -r '.Committee' "$MIRAGE_ABI_FILEPATH")
+    echo $MIRAGE_CONTRACTS
+}
+
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     if [[ "$#" -gt 0 ]]; then
