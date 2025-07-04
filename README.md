@@ -76,16 +76,16 @@ Example:
 ETH_PRIVATE_KEY=<your_private_key> IMA_TAG=<ima_tag> ENDPOINT=<rpc_endpoint> GAS_PRICE=<gas_price> NETWORK=<network_name> ETHERSCAN=<etherscan_api_key> bash deploy_ima.sh
 ```
 
-### Deploy Mirage-Manager
+### Deploy Fair-Manager
 
 #### Option 1: Deploy with Local Anvil Node
 
-Run a local Anvil instance and deploy `mirage-manager` contracts on it:
+Run a local Anvil instance and deploy `fair-manager` contracts on it:
 
 Required environment variables:
 
 * `RUN_ANVIL=true`
-* `MIRAGE_TAG` (tag for the Mirage-Manager version)
+* `FAIR_TAG` (tag for the Fair-Manager version)
 * `CHAIN_NAME` (name of the chain)
 * `TARGET` (skale-manager alias or address)
 * `MAINNET_ENDPOINT` (mainnet RPC endpoint)
@@ -93,18 +93,18 @@ Required environment variables:
 Example:
 
 ```bash
-RUN_ANVIL=true MIRAGE_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<skale_manager_alias_or_address> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_mirage.sh
+RUN_ANVIL=true FAIR_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<skale_manager_alias_or_address> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_fair.sh
 ```
 
 #### Option 2: Deploy to a Custom Network
 
-Deploy `mirage-manager` contracts to a custom network:
+Deploy `fair-manager` contracts to a custom network:
 
 Required environment variables:
 
 * `ETH_PRIVATE_KEY` (Ethereum private key without the `0x` prefix)
-* `ENDPOINT` (Mirage Chain RPC endpoint)
-* `MIRAGE_TAG` (tag for the Mirage-Manager version)
+* `ENDPOINT` (Fair Chain RPC endpoint)
+* `FAIR_TAG` (tag for the Fair-Manager version)
 * `CHAIN_NAME` (name of the chain)
 * `TARGET` (skale-manager alias or address)
 * `MAINNET_ENDPOINT` (mainnet RPC endpoint)
@@ -115,10 +115,10 @@ Required environment variables:
 Example:
 
 ```bash
-ETH_PRIVATE_KEY=<your_private_key> ENDPOINT=<mirage_chain_endpoint> MIRAGE_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<skale_manager_alias_or_address> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_mirage.sh
+ETH_PRIVATE_KEY=<your_private_key> ENDPOINT=<fair_chain_endpoint> FAIR_TAG=0.0.1-develop.6 CHAIN_NAME=<chain_name> TARGET=<skale_manager_alias_or_address> MAINNET_ENDPOINT=<mainnet_endpoint> bash deploy_fair.sh
 ```
 
-ABI and address of the deployed contracts will be saved in `contracts_data/mirage.json` file.
+ABI and address of the deployed contracts will be saved in `contracts_data/fair.json` file.
 
 ### Deploy SKALE Allocator
 
