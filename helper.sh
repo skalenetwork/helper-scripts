@@ -8,7 +8,7 @@ export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 export SM_IMAGE_NAME="skale-manager"
 export ALLOCATOR_IMAGE_NAME="skale-allocator"
 export IMA_IMAGE_NAME="ima-contracts"
-export MIRAGE_IMAGE_NAME="professional"
+export FAIR_IMAGE_NAME="professional"
 export SGX_WALLET_CONTAINER_NAME="sgx-simulator"
 
 export DOCKER_NETWORK=${DOCKER_NETWORK:-testnet}
@@ -85,8 +85,8 @@ deploy_manager () {
 }
 
 
-deploy_mirage () {
-    : "${1?Pass MIRAGE_TAG to ${FUNCNAME[0]}}"
+deploy_fair () {
+    : "${1?Pass FAIR_TAG to ${FUNCNAME[0]}}"
     : "${2?Pass ENDPOINT to ${FUNCNAME[0]}}"
     : "${3?Pass PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
@@ -95,15 +95,15 @@ deploy_mirage () {
     : "${7?Pass CHAIN_NAME to ${FUNCNAME[0]}}"
     : "${8?Pass TARGET to ${FUNCNAME[0]}}"
     : "${9?Pass MAINNET_ENDPOINT to ${FUNCNAME[0]}}"
-    echo Going to run $MIRAGE_IMAGE_NAME:$1 docker container...
+    echo Going to run $FAIR_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
     cmd="yarn hardhat run migrations/deploy.ts --network custom"
 
-    docker rm -f $MIRAGE_IMAGE_NAME || true
-    docker pull skalenetwork/$MIRAGE_IMAGE_NAME:$1
+    docker rm -f $FAIR_IMAGE_NAME || true
+    docker pull skalenetwork/$FAIR_IMAGE_NAME:$1
     docker run \
-        --name $MIRAGE_IMAGE_NAME \
+        --name $FAIR_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
@@ -113,12 +113,12 @@ deploy_mirage () {
         -e CHAIN_NAME=$7 \
         -e TARGET=$8 \
         -e MAINNET_ENDPOINT=$9 \
-        skalenetwork/$MIRAGE_IMAGE_NAME:$1 \
+        skalenetwork/$FAIR_IMAGE_NAME:$1 \
         /bin/bash -c "$cmd"
 
-    echo Copying $DIR/contracts_data/mirage-manager-${MIRAGE_TAG}-* to $DIR/contracts_data/mirage.json
-    cp $DIR/contracts_data/mirage-manager-${MIRAGE_TAG}-* $DIR/contracts_data/mirage.json
-    docker rm -f $MIRAGE_IMAGE_NAME || true
+    echo Copying $DIR/contracts_data/fair-manager-${FAIR_TAG}-* to $DIR/contracts_data/fair.json
+    cp $DIR/contracts_data/fair-manager-${FAIR_TAG}-* $DIR/contracts_data/fair.json
+    docker rm -f $FAIR_IMAGE_NAME || true
 }
 
 
@@ -286,10 +286,10 @@ allocator_address () {
     echo $ALLOCATOR_CONTRACTS
 }
 
-mirage_address () {
-    MIRAGE_ABI_FILEPATH=${MIRAGE_ABI_FILEPATH:="$DIR/contracts_data/mirage.json"}
-    export MIRAGE_CONTRACTS=$(jq -r '.Committee' "$MIRAGE_ABI_FILEPATH")
-    echo $MIRAGE_CONTRACTS
+fair_address () {
+    FAIR_ABI_FILEPATH=${FAIR_ABI_FILEPATH:="$DIR/contracts_data/fair.json"}
+    export FAIR_CONTRACTS=$(jq -r '.Committee' "$FAIR_ABI_FILEPATH")
+    echo $FAIR_CONTRACTS
 }
 
 
