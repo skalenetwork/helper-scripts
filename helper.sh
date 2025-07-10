@@ -249,11 +249,12 @@ run_anvil () {
 run_sgx_simulator () {
     : "${1?Pass SGX_WALLET_TAG to ${FUNCNAME[0]}}"
     SGX_WALLET_IMAGE_NAME=skalenetwork/sgxwallet_sim:$1
-
-    docker rm -f $SGX_WALLET_CONTAINER_NAME || true
-    docker pull $SGX_WALLET_IMAGE_NAME
-    docker run -d -p 1026-1031:1026-1031 --name $SGX_WALLET_CONTAINER_NAME $SGX_WALLET_IMAGE_NAME -s -y -a
+    if ! docker inspect "${container_name}" >/dev/null 2>&1; then
+        docker pull $SGX_WALLET_IMAGE_NAME
+        docker run -d -p 1026-1031:1026-1031 --name $SGX_WALLET_CONTAINER_NAME $SGX_WALLET_IMAGE_NAME -s -y
+    fi
 }
+
 
 
 create_test_docker_network () {
