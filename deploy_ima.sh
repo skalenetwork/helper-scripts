@@ -19,7 +19,7 @@ source "$DIR/helper.sh"
 
 [[ $RUN_ANVIL ]] && run_anvil
 
-PRIVATE_KEY=${ANVIL_PRIVATE_KEY:-$ETH_PRIVATE_KEY}
+PRIVATE_KEY=${ETH_PRIVATE_KEY:-$ANVIL_PRIVATE_KEY}
 : "${PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
 
 MANAGER_JSON="$DIR/contracts_data/manager.json"
