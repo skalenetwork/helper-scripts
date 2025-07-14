@@ -8,7 +8,7 @@ export DOCKER_NETWORK_ENDPOINT=http://ganache:8545
 export SM_IMAGE_NAME="skale-manager"
 export ALLOCATOR_IMAGE_NAME="skale-allocator"
 export IMA_IMAGE_NAME="ima-contracts"
-export FAIR_IMAGE_NAME="fair"
+export FAIR_IMAGE_NAME="fair-manager"
 export SGX_WALLET_CONTAINER_NAME="sgx-simulator"
 
 export DOCKER_NETWORK=${DOCKER_NETWORK:-testnet}
