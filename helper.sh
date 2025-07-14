@@ -288,7 +288,7 @@ allocator_address () {
 }
 
 mirage_address () {
-    MIRAGE_ABI_FILEPATH=${MIRAGE_ABI_FILEPATH:="$DIR/contracts_data/fair.json"}
+    MIRAGE_ABI_FILEPATH=${MIRAGE_ABI_FILEPATH:="$DIR/contracts_data/mirage.json"}
     export MIRAGE_CONTRACTS=$(jq -r '.Committee' "$MIRAGE_ABI_FILEPATH")
     echo $MIRAGE_CONTRACTS
 }
