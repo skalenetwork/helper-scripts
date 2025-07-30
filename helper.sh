@@ -91,7 +91,7 @@ deploy_fair () {
     : "${3?Pass PRIVATE_KEY to ${FUNCNAME[0]}}"
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
     : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
-    : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
+    : "${6?Pass EXPLORER_URL to ${FUNCNAME[0]}}"
     : "${7?Pass CHAIN_NAME to ${FUNCNAME[0]}}"
     : "${8?Pass TARGET to ${FUNCNAME[0]}}"
     : "${9?Pass MAINNET_ENDPOINT to ${FUNCNAME[0]}}"
@@ -109,7 +109,7 @@ deploy_fair () {
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
-        -e ETHERSCAN=$6 \
+        -e EXPLORER_URL=$6 \
         -e CHAIN_NAME=$7 \
         -e TARGET=$8 \
         -e MAINNET_ENDPOINT=$9 \
