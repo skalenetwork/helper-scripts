@@ -97,7 +97,7 @@ deploy_fair () {
     : "${9?Pass MAINNET_ENDPOINT to ${FUNCNAME[0]}}"
     echo Going to run $FAIR_IMAGE_NAME:$1 docker container...
 
-    mkdir -p $DIR/contracts_data/openzeppelin
+    mkdir -p $DIR/contracts_data/.openzeppelin
     cmd="yarn hardhat run migrations/deploy.ts --network custom"
 
     docker rm -f $FAIR_IMAGE_NAME || true
@@ -105,6 +105,8 @@ deploy_fair () {
     docker run \
         --name $FAIR_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
+        -v $DIR/contracts_data:/usr/src/manager/data \
+        --mount type=volume,dst=/usr/src/manager/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/.openzeppelin \
         --network $DOCKER_NETWORK \
         -e ENDPOINT=$2 \
         -e PRIVATE_KEY=$3 \
