@@ -242,6 +242,11 @@ run_anvil () {
 }
 
 
+run_hh_node () {
+    : "${ETH_PRIVATE_KEY:?Need to set ETH_PRIVATE_KEY}"
+    docker run -d --network host  -e PRIVATE_KEY=$ETH_PRIVATE_KEY --name hh-node skalenetwork/hh-node:main-latest || true
+}
+
 # Run docker container with sgx simulator
 #
 # Previous sgx-simulator container will be removed
