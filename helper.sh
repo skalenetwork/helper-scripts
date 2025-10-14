@@ -23,14 +23,14 @@ run_manager () {
     mkdir -p $DIR/contracts_data/openzeppelin
 
     docker rm -f $SM_IMAGE_NAME || true
-    docker pull skalenetwork/$SM_IMAGE_NAME:$1
+    docker pull ghcr.io/skalenetwork/$SM_IMAGE_NAME:$1
     docker run \
         -ti \
         --name $SM_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
         --mount type=volume,dst=/usr/src/manager/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
-        skalenetwork/$SM_IMAGE_NAME:$1 \
+        ghcr.io/skalenetwork/$SM_IMAGE_NAME:$1 \
         bash
 }
 
@@ -65,7 +65,7 @@ deploy_manager () {
     echo CMD $cmd
 
     docker rm -f $SM_IMAGE_NAME || true
-    docker pull skalenetwork/$SM_IMAGE_NAME:$1
+    docker pull ghcr.io/skalenetwork/$SM_IMAGE_NAME:$1
     docker run \
         --name $SM_IMAGE_NAME \
         -v $DIR/contracts_data:/usr/src/manager/data \
@@ -75,7 +75,7 @@ deploy_manager () {
         -e PRIVATE_KEY=$3 \
         -e GASPRICE=$4 \
         -e ETHERSCAN=$6 \
-        skalenetwork/$SM_IMAGE_NAME:$1 \
+        ghcr.io/skalenetwork/$SM_IMAGE_NAME:$1 \
         /bin/bash -c "$cmd"
 
     echo Copying $DIR/contracts_data/skale-manager-*-abi.json to $DIR/contracts_data/manager.json
