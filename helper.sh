@@ -120,6 +120,7 @@ deploy_fair () {
 
     echo Copying $DIR/contracts_data/fair-manager-${FAIR_TAG}-* to $DIR/contracts_data/fair.json
     cp $DIR/contracts_data/fair-manager-${FAIR_TAG}-* $DIR/contracts_data/fair.json
+    mv $DIR/contracts_data/.openzeppelin/* $DIR/contracts_data/fair-openzeppelin/ || true
     docker rm -f $FAIR_IMAGE_NAME || true
 }
 
