@@ -60,7 +60,7 @@ deploy_manager () {
     rm $DIR/contracts_data/skale-manager-* || true
 
     deploy="npx hardhat run migrations/deploy.ts --network custom"
-    post_deploy="cp .openzeppelin/* openzeppelin-artifacts/"
+    post_deploy="mv .openzeppelin/* openzeppelin-artifacts/"
     cmd="${deploy} && ${post_deploy}"
     echo CMD $cmd
 
@@ -101,6 +101,7 @@ deploy_fair () {
     cmd="yarn hardhat run migrations/deploy.ts --network custom"
 
     docker rm -f $FAIR_IMAGE_NAME || true
+    mv $DIR/contracts_data/.openzeppelin/* $DIR/contracts_data/fair-openzeppelin/ || true
     docker pull skalenetwork/$FAIR_IMAGE_NAME:$1
     docker run \
         --name $FAIR_IMAGE_NAME \
