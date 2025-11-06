@@ -98,6 +98,7 @@ deploy_fair () {
     echo Going to run $FAIR_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/.openzeppelin
+    mkdir -p $DIR/contracts_data/fair-openzeppelin
     cmd="yarn hardhat run migrations/deploy.ts --network custom"
 
     docker rm -f $FAIR_IMAGE_NAME || true
