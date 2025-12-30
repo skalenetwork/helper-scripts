@@ -6,3 +6,4 @@ allocator_contracts_data/
 venv/
 
 private_key.txt
+anvil_state/
