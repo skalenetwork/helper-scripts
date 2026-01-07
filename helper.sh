@@ -239,7 +239,7 @@ deploy_ima_proxy () {
 run_anvil () {
     [[ $CLEANUP_ANVIL_STATE ]] && rm -rf $DIR/anvil_state || true
     mkdir -p $DIR/anvil_state
-    docker run -d --network host --name anvil ghcr.io/foundry-rs/foundry:v1.5.1 "anvil --prune-history 10 --silent" || true
+    docker run -d --network host --name anvil ghcr.io/foundry-rs/foundry:v1.5.1 "anvil --prune-history 5" || true
     sleep 5
     export ANVIL_PRIVATE_KEY=$(docker logs anvil 2>&1 | grep -A 10 "Private Keys" | grep "(0)" | awk '{print $2}')
     echo "ANVIL_PRIVATE_KEY exported to the env: $ANVIL_PRIVATE_KEY"
