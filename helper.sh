@@ -53,13 +53,14 @@ deploy_manager () {
     : "${4?Pass GAS_PRICE to ${FUNCNAME[0]}}"
     : "${5?Pass NETWORK to ${FUNCNAME[0]}}"
     : "${6?Pass ETHERSCAN to ${FUNCNAME[0]}}"
+
     echo Going to run $SM_IMAGE_NAME:$1 docker container...
 
     mkdir -p $DIR/contracts_data/openzeppelin
 
     rm $DIR/contracts_data/skale-manager-* || true
 
-    deploy="npx hardhat run migrations/deploy.ts --network custom"
+    deploy="yarn hardhat run migrations/deploy.ts --network custom"
     post_deploy="mv .openzeppelin/* openzeppelin-artifacts/"
     cmd="${deploy} && ${post_deploy}"
     echo CMD $cmd
@@ -77,6 +78,12 @@ deploy_manager () {
         -e ETHERSCAN=$6 \
         skalenetwork/$SM_IMAGE_NAME:$1 \
         /bin/bash -c "$cmd"
+
+    if ! compgen -G "$DIR/contracts_data/skale-manager-*-contracts.json" > /dev/null; then
+        echo "SKALE Manager $1 did not generate skale-manager-*-contracts.json; use an image that provides the contracts artifact" >&2
+        docker rm -f $SM_IMAGE_NAME || true
+        return 1
+    fi
 
     echo Copying $DIR/contracts_data/skale-manager-*-abi.json to $DIR/contracts_data/manager.json
     cp $DIR/contracts_data/skale-manager-*-abi.json $DIR/contracts_data/manager.json
