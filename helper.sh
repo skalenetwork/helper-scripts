@@ -166,13 +166,14 @@ deploy_allocator () {
 
      mkdir -p $DIR/allocator_contracts_data/openzeppelin
 
+    rm $DIR/allocator_contracts_data/skale-allocator-* || true
+
     docker pull skalenetwork/$ALLOCATOR_IMAGE_NAME:$1
 
     DEPLOY_TIMEOUT=1200
     docker run \
         -d \
         --name $ALLOCATOR_IMAGE_NAME \
-        -v $DIR/contracts_data:/usr/src/manager_data \
         -v $DIR/allocator_contracts_data:/usr/src/allocator/data \
         --mount type=volume,dst=/usr/src/allocator/.openzeppelin,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=$DIR/allocator_contracts_data/openzeppelin \
         --network $DOCKER_NETWORK \
@@ -180,16 +181,18 @@ deploy_allocator () {
         -e PRIVATE_KEY=$3 \
         -e PRODUCTION=$4 \
         -e GASPRICE=$5 \
+        -e SKALE_MANAGER_ADDRESS=$(jq -r '.skale_manager_address' $SM_ABI_FILEPATH) \
         skalenetwork/$ALLOCATOR_IMAGE_NAME:$1 \
         sleep $DEPLOY_TIMEOUT
 
     DEPLOY_CMD="npx hardhat run migrations/deploy.ts --network custom || true"
 
-    docker exec $ALLOCATOR_IMAGE_NAME bash -c "cp /usr/src/manager_data/manager.json /usr/src/allocator/scripts/manager.json"
     docker exec $ALLOCATOR_IMAGE_NAME bash -c "$DEPLOY_CMD"
 
-    echo Copying $DIR/allocator_contracts_data/skale-allocator-* to $DIR/allocator_contracts_data/allocator.json
-    cp $DIR/allocator_contracts_data/skale-allocator-* $DIR/allocator_contracts_data/allocator.json
+    echo Creating $DIR/allocator_contracts_data/allocator.json from $DIR/allocator_contracts_data/skale-allocator-*-contracts.json
+    jq --arg cm "$(jq -r '.contract_manager_address' $SM_ABI_FILEPATH)" \
+        '{allocator_address: .Allocator, escrow_address: .Escrow, contract_manager_address: $cm}' \
+        $DIR/allocator_contracts_data/skale-allocator-*-contracts.json > $DIR/allocator_contracts_data/allocator.json
 
     docker rm -f $ALLOCATOR_IMAGE_NAME || true
 }
